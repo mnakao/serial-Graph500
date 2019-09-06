@@ -67,7 +67,8 @@ public:
 		, scatter_(comm_)
 	{
 		CTRACER(AsyncA2A_construtor);
-		MPI_Comm_size(comm_, &comm_size_);
+		comm_size_ = 1;
+		//		MPI_Comm_size(comm_, &comm_size_);
 		node_ = new CommTarget[comm_size_]();
 		d_ = new DynamicDataSet();
 		pthread_mutex_init(&d_->thread_sync_, NULL);
@@ -733,8 +734,10 @@ void my_allgatherv_2d(T *sendbuf, int send_count, T *recvbuf, int* recv_count, i
 	if(mpi.isMultiDimAvailable == false) {
 		MpiRequestManager req_man(8);
 		AllgatherHandler<T> handler;
-		int size; MPI_Comm_size(comm.comm, &size);
-		int rank; MPI_Comm_rank(comm.comm, &rank);
+		int size = 1;
+		//		MPI_Comm_size(comm.comm, &size);
+		int rank = 0;
+		// MPI_Comm_rank(comm.comm, &rank);
 		int left = (rank + size - 1) % size;
 		int right = (rank + size + 1) % size;
 		handler.start(&req_man, recvbuf, recv_count, recv_offset, comm.comm,

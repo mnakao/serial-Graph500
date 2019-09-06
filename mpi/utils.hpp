@@ -382,7 +382,8 @@ void xfree(void* p) {
 #if SHARED_MEMORY
 void* shared_malloc(size_t nbytes) {
 	MPI_Comm comm = mpi.comm_z;
-	int rank; MPI_Comm_rank(comm, &rank);
+	int rank = 0;
+	//	MPI_Comm_rank(comm, &rank);
 	key_t shm_key;
 	int shmid = -1;
 	void* addr = NULL;
@@ -1488,8 +1489,10 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 	int reqeust_level = MPI_THREAD_SINGLE;
 #endif
 	MPI_Init_thread(&argc, &argv, reqeust_level, &mpi.thread_level);
-	MPI_Comm_rank(MPI_COMM_WORLD, &mpi.rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &mpi.size);
+	mpi.rank = 0;
+	mpi.size = 1;
+	//	MPI_Comm_rank(MPI_COMM_WORLD, &mpi.rank);
+	//	MPI_Comm_size(MPI_COMM_WORLD, &mpi.size);
 #if PRINT_WITH_TIME
 	global_clock.init();
 #endif
@@ -1712,8 +1715,10 @@ void my_allgatherv(T *sendbuf, int send_count, T *recvbuf, int* recv_count, int*
 {
 	memcpy(&recvbuf[recv_offset[comm.rank]], sendbuf, sizeof(T) * send_count);
 	if(mpi.isMultiDimAvailable == false) {
-		int size; MPI_Comm_size(comm.comm, &size);
-		int rank; MPI_Comm_rank(comm.comm, &rank);
+		int size = 1;
+		//MPI_Comm_size(comm.comm, &size);
+		int rank = 0;
+		//MPI_Comm_rank(comm.comm, &rank);
 		int left = (rank + size - 1) % size;
 		int right = (rank + size + 1) % size;
 		my_allgatherv(recvbuf, recv_count, recv_offset, comm.comm, rank, size, left, right);
@@ -1879,8 +1884,8 @@ public:
 		, recv_counts_(NULL)
 		, recv_offsets_(NULL)
 	{
-		MPI_Comm_size(comm_, &comm_size_);
-
+	  //		MPI_Comm_size(comm_, &comm_size_);
+                comm_size_ = 1;
 		buffer_width_ = std::max<int>(CACHE_LINE/sizeof(int), comm_size_);
 		thread_counts_ = static_cast<int*>(cache_aligned_xmalloc(buffer_width_ * (max_threads_*2 + 1) * sizeof(int)));
 		thread_offsets_ = thread_counts_ + buffer_width_*max_threads_;

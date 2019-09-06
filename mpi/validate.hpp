@@ -61,7 +61,8 @@ gather* init_gather(void* input, size_t input_count, size_t elt_size, void* outp
   g->local_indices = (size_t*)page_aligned_xmalloc(nrequests_max * sizeof(size_t));
   g->remote_ranks = (int*)page_aligned_xmalloc(nrequests_max * sizeof(int));
   g->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
-  MPI_Comm_size(g->comm, &g->comm_size);
+  //  MPI_Comm_size(g->comm, &g->comm_size);
+  g->comm_size = 1;
   int size = g->comm_size;
   g->send_counts = (int*)cache_aligned_xmalloc((size + 1) * sizeof(int));
   g->send_offsets = (int*)cache_aligned_xmalloc((size + 2) * sizeof(int));
@@ -231,7 +232,8 @@ scatter_constant* init_scatter_constant(void* array, size_t array_count, size_t 
   MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
   sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
-  MPI_Comm_size(sc->comm, &sc->comm_size);
+  //  MPI_Comm_size(sc->comm, &sc->comm_size);
+  sc->comm_size = 1;
   int size = sc->comm_size;
   sc->send_counts = (int*)cache_aligned_xmalloc((size + 1) * sizeof(int));
   sc->send_offsets = (int*)cache_aligned_xmalloc((size + 2) * sizeof(int));
@@ -368,7 +370,8 @@ scatter* init_scatter(void* array, size_t array_count, size_t elt_size, size_t n
   MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
   sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
-  MPI_Comm_size(sc->comm, &sc->comm_size);
+  //  MPI_Comm_size(sc->comm, &sc->comm_size);
+  sc->comm_size = 1;
   int size = sc->comm_size;
   sc->send_counts = (int*)cache_aligned_xmalloc((size + 1) * sizeof(int));
   sc->send_offsets = (int*)cache_aligned_xmalloc((size + 2) * sizeof(int));
