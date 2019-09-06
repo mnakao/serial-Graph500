@@ -1404,11 +1404,14 @@ private:
 		TRACER(num_verts);
 		const int64_t num_local_verts = g.num_local_verts_;
 		const int64_t local_bitmap_width = num_local_verts / NBPE;
-		int recvcounts[mpi.size_2dc];
-		for(int i = 0; i < mpi.size_2dc; ++i) recvcounts[i] = local_bitmap_width;
+		//		int recvcounts[mpi.size_2dc];
+		//		for(int i = 0; i < mpi.size_2dc; ++i) recvcounts[i] = local_bitmap_width;
 
 		g.has_edge_bitmap_ = (BitmapType*)cache_aligned_xmalloc(local_bitmap_width*sizeof(BitmapType));
-		MPI_Reduce_scatter(g.row_bitmap_, g.has_edge_bitmap_, recvcounts, MpiTypeOf<BitmapType>::type, MPI_BOR, mpi.comm_2dr);
+		//		MPI_Reduce_scatter(g.row_bitmap_, g.has_edge_bitmap_, recvcounts, MpiTypeOf<BitmapType>::type, MPI_BOR, mpi.comm_2dr);
+		for(int i=0;i<local_bitmap_width;i++)
+		  g.has_edge_bitmap_[i] = g.row_bitmap_[i];
+		
 		int64_t num_vertices = 0;
 #pragma omp parallel for reduction(+:num_vertices)
 		for(int i = 0; i < local_bitmap_width; ++i) {
