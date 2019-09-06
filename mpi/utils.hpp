@@ -1321,7 +1321,8 @@ static int compute_rank_2d(int x, int y, int sx, int sy) {
 static void setup_rank_map(COMM_2D& comm) {
 	int send_rank = comm.rank_x + comm.rank_y * comm.size_x;
 	int recv_rank[comm.size];
-	MPI_Allgather(&send_rank, 1, MPI_INT, recv_rank, 1, MPI_INT, comm.comm);
+	//	MPI_Allgather(&send_rank, 1, MPI_INT, recv_rank, 1, MPI_INT, comm.comm);
+	recv_rank[0] = send_rank;
 	comm.rank_map = (int*)malloc(comm.size*sizeof(int));
 	for(int i = 0; i < comm.size; ++i) {
 		comm.rank_map[recv_rank[i]] = i;
@@ -1634,13 +1635,17 @@ template <typename T>
 int allgatherv(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm, int comm_size) {
 	TRACER(MpiCol::allgatherv);
 	int recv_off[comm_size+1], recv_cnt[comm_size];
-	MPI_Allgather(&sendcount, 1, MPI_INT, recv_cnt, 1, MPI_INT, comm);
+	//	MPI_Allgather(&sendcount, 1, MPI_INT, recv_cnt, 1, MPI_INT, comm);
+	recv_cnt[0] = sendcount;
 	recv_off[0] = 0;
 	for(int i = 0; i < comm_size; ++i) {
 		recv_off[i+1] = recv_off[i] + recv_cnt[i];
 	}
-	MPI_Allgatherv(sendbuf, sendcount, MpiTypeOf<T>::type,
-			recvbuf, recv_cnt, recv_off, MpiTypeOf<T>::type, comm);
+	//	MPI_Allgatherv(sendbuf, sendcount, MpiTypeOf<T>::type,
+	//			recvbuf, recv_cnt, recv_off, MpiTypeOf<T>::type, comm);
+	for(int i=0;i<recv_cnt[0];i++)
+	  recvbuf[recv_off[0] + i] = sendbuf[i];
+	
 	return recv_off[comm_size];
 }
 

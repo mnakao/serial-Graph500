@@ -529,8 +529,11 @@ public:
 		my_allgather_2d(bitmap, shared_bitmap_width, recv_buffer, mpi.comm_c);
 #endif // #if ENABLE_MY_ALLGATHER == 1
 #else
-			MPI_Allgather(bitmap, shared_bitmap_width, get_mpi_type(bitmap[0]),
-					recv_buffer, shared_bitmap_width, get_mpi_type(bitmap[0]), mpi.comm_y);
+		//			MPI_Allgather(bitmap, shared_bitmap_width, get_mpi_type(bitmap[0]),
+		//					recv_buffer, shared_bitmap_width, get_mpi_type(bitmap[0]), mpi.comm_y);
+		for(int i=0;i<shared_bitmap_width;i++)
+		  recv_buffer[i] = bitmap[i];
+		
 #endif
 #if VERVOSE_MODE
 			g_expand_bitmap_comm += shared_bitmap_width * mpi.size_y * sizeof(BitmapType);
@@ -555,8 +558,10 @@ public:
 	my_allgather_2d(bitmap, bitmap_width, recv_buffer, mpi.comm_r);
 #endif // #if ENABLE_MY_ALLGATHER == 1
 #else
-		MPI_Allgather(bitmap, bitmap_width, get_mpi_type(bitmap[0]),
-				recv_buffer, bitmap_width, get_mpi_type(bitmap[0]), mpi.comm_2dr);
+	//		MPI_Allgather(bitmap, bitmap_width, get_mpi_type(bitmap[0]),
+	//				recv_buffer, bitmap_width, get_mpi_type(bitmap[0]), mpi.comm_2dr);
+	for(int i=0;i<bitmap_width;i++)
+	  recv_buffer[i] = bitmap[i];
 #endif
 #if VERVOSE_MODE
 		g_expand_bitmap_comm += bitmap_width * mpi.size_2dc * sizeof(BitmapType);
@@ -634,7 +639,8 @@ public:
 		int comm_size = mpi.comm_r.size;
 		int recv_size[comm_size];
 		int recv_off[comm_size+1];
-		MPI_Allgather(&nq_size, 1, MPI_INT, recv_size, 1, MPI_INT, mpi.comm_r.comm);
+		//		MPI_Allgather(&nq_size, 1, MPI_INT, recv_size, 1, MPI_INT, mpi.comm_r.comm);
+		recv_size[0] = nq_size;
 		recv_off[0] = 0;
 		for(int i = 0; i < comm_size; ++i) {
 			recv_off[i+1] = recv_off[i] + recv_size[i];
@@ -649,8 +655,10 @@ public:
 #elif ENABLE_MY_ALLGATHER == 2
 		my_allgatherv_2d(nq, nq_size, recv_buf, recv_size, recv_off, mpi.comm_r);
 #else
-		MPI_Allgatherv(nq, nq_size, MpiTypeOf<TwodVertex>::type,
-				recv_buf, recv_size, recv_off, MpiTypeOf<TwodVertex>::type, mpi.comm_r.comm);
+		//		MPI_Allgatherv(nq, nq_size, MpiTypeOf<TwodVertex>::type,
+		//				recv_buf, recv_size, recv_off, MpiTypeOf<TwodVertex>::type, mpi.comm_r.comm);
+		for(int i=0;i<recv_size[0];i++)
+		  recv_buf[recv_off[0] + i] = nq[i];
 #endif
 		VERVOSE(g_expand_list_comm += cq_size_ * sizeof(TwodVertex));
 		cq_list_ = recv_buf;
