@@ -452,7 +452,8 @@ void test_shared_memory() {
 	// MPI_Bcast(&ref_val, 1, MpiTypeOf<int>::type, 0, mpi.comm_z);
 	int result = (*mem == ref_val), global_result;
 	shared_free(mem);
-	MPI_Allreduce(&result, &global_result, 1, MpiTypeOf<int>::type, MPI_LOR, MPI_COMM_WORLD);
+	//	MPI_Allreduce(&result, &global_result, 1, MpiTypeOf<int>::type, MPI_LOR, MPI_COMM_WORLD);
+	global_result = result;
 	if(global_result == false) {
 		if(mpi.isMaster()) print_with_prefix("Shared memory test failed!! Please, check MPI_NUM_NODE.");
 		MPI_Abort(MPI_COMM_WORLD, 1);

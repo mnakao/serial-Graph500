@@ -182,7 +182,7 @@ public:
 
 			if(loop > 0) {
 				int has_data = (scatter_.get_send_count() > 0);
-				MPI_Allreduce(MPI_IN_PLACE, &has_data, 1, MPI_INT, MPI_LOR, comm_);
+				//				MPI_Allreduce(MPI_IN_PLACE, &has_data, 1, MPI_INT, MPI_LOR, comm_);
 				if(has_data == 0) break;
 			}
 

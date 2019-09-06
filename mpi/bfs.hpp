@@ -1160,8 +1160,10 @@ public:
 		PROF(seq_proc_time_ += tk_all);
 		//		PROF(MPI_Barrier(mpi.comm_2d));
 		PROF(fold_competion_wait_ += tk_all);
-		MPI_Allreduce(&nq_size_, &max_nq_size_, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
-		MPI_Allreduce(&send_nq_size, &global_nq_size_, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		//		MPI_Allreduce(&nq_size_, &max_nq_size_, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
+		//		MPI_Allreduce(&send_nq_size, &global_nq_size_, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		max_nq_size_ = nq_size_;
+		global_nq_size_ = send_nq_size;
 		PROF(gather_nq_time_ += tk_all);
 	}
 
@@ -2063,9 +2065,11 @@ public:
 		//		MPI_Reduce_scatter(visited_count, &nq_size_, recv_count, MPI_INT, MPI_SUM, mpi.comm_2dr);
 		nq_size_ = visited_count[0]; // recv_count must be 1
 		
-		MPI_Allreduce(&nq_size_, &max_nq_size_, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
+		//		MPI_Allreduce(&nq_size_, &max_nq_size_, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
+		max_nq_size_ = nq_size_;
 		int64_t nq_size = nq_size_;
-		MPI_Allreduce(&nq_size, &global_nq_size_, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		//		MPI_Allreduce(&nq_size, &global_nq_size_, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		global_nq_size_ = nq_size;
 #else
 		int red_nq_size[mpi.size_2dc];
 		struct {
@@ -2086,7 +2090,8 @@ public:
 				if(max_nq_size < red_nq_size[i]) max_nq_size = red_nq_size[i];
 			}
 			// compute global_nq_size by allreduce within the processor column
-			MPI_Allreduce(&sum_nq_size, &global_nq_size, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2dc);
+			//			MPI_Allreduce(&sum_nq_size, &global_nq_size, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2dc);
+			global_nq_size = sum_nq_size;
 			for(int i = 0; i < mpi.size_2dc; ++i) {
 				scatter_buffer[i].nq_size = red_nq_size[i];
 				scatter_buffer[i].max_nq_size = max_nq_size;

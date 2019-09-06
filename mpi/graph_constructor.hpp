@@ -332,9 +332,9 @@ private:
 		int64_t local_verts_unit = int64_t(1) << log_local_verts_unit_;
 		max_local_verts_ = roundup(max_local_verts_, local_verts_unit);
 		// get global max
-		MPI_Allreduce(
-				MPI_IN_PLACE, &max_local_verts_, 1,
-				MpiTypeOf<int64_t>::type, MPI_MAX, mpi.comm_2d);
+		//		MPI_Allreduce(
+		//				MPI_IN_PLACE, &max_local_verts_, 1,
+		//				MpiTypeOf<int64_t>::type, MPI_MAX, mpi.comm_2d);
 		if(mpi.isMaster()) print_with_prefix("Max local vertex %f M / %f M = %f %%",
 				to_mega(max_local_verts_), to_mega(num_verts), (double)max_local_verts_ / num_verts * 100.0);
 
@@ -679,9 +679,9 @@ private:
 	template<typename EdgeType>
 	void reduceMaxWeight(int max_weight, GraphType& g, typename EdgeType::has_weight dummy = 0)
 	{
-		int global_max_weight;
-		MPI_Allreduce(&max_weight, &global_max_weight, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
-		g.max_weight_ = global_max_weight;
+        	int global_max_weight = max_weight;
+		//		MPI_Allreduce(&max_weight, &global_max_weight, 1, MPI_INT, MPI_MAX, mpi.comm_2d);
+	        g.max_weight_ = global_max_weight;
 		g.log_max_weight_ = get_msb_index(global_max_weight);
 	}
 
@@ -711,8 +711,9 @@ private:
 
 		{
 			uint64_t tmp_send = max_vertex;
-			MPI_Allreduce(&tmp_send, &max_vertex, 1, MpiTypeOf<uint64_t>::type, MPI_BOR, mpi.comm_2d);
-
+			// MPI_Allreduce(&tmp_send, &max_vertex, 1, MpiTypeOf<uint64_t>::type, MPI_BOR, mpi.comm_2d);
+			max_vertex = tmp_send;
+			
 			const int log_max_vertex = get_msb_index(max_vertex) + 1;
 			if(mpi.isMaster()) print_with_prefix("Estimated SCALE = %d.", log_max_vertex);
 
@@ -751,7 +752,7 @@ private:
 			scatter.sum();
 
 #if NETWORK_PROBLEM_AYALISYS
-			if(mpi.isMaster()) print_with_prefix("MPI_Allreduce...");
+			//			if(mpi.isMaster()) print_with_prefix("MPI_Allreduce...");
 #endif
 
 #if NETWORK_PROBLEM_AYALISYS
@@ -1418,7 +1419,8 @@ private:
 			num_vertices += __builtin_popcountl(g.has_edge_bitmap_[i]);
 		}
 		int64_t tmp_send_num_vertices = num_vertices;
-		MPI_Allreduce(&tmp_send_num_vertices, &num_vertices, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		//		MPI_Allreduce(&tmp_send_num_vertices, &num_vertices, 1, MpiTypeOf<int64_t>::type, MPI_SUM, mpi.comm_2d);
+		num_vertices = tmp_send_num_vertices;
 		VERVOSE(int64_t num_virtual_vertices = int64_t(1) << g.log_orig_global_verts_);
 		VERVOSE(if(mpi.isMaster()) print_with_prefix("# of actual vertices %f G %f %%", to_giga(num_vertices),
 				(double)num_vertices / (double)num_virtual_vertices * 100.0));
