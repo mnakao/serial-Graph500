@@ -470,7 +470,7 @@ public:
 		// !!root is UNSWIZZLED and ORIGINAL ID!!
 		int root_owner = vertex_owner(root);
 		int root_r = root_owner % mpi.size_2dr;
-		int root_c = root_owner / mpi.size_2dr;
+		//		int root_c = root_owner / mpi.size_2dr;
 
 		cq_list_ = (TwodVertex*)work_buf_;
 
@@ -1016,8 +1016,8 @@ public:
 						BitmapType cq_bit = bit_flags & (-bit_flags);
 						BitmapType low_mask = cq_bit - 1;
 						bit_flags &= ~cq_bit;
-						int bit_idx = __builtin_popcountl(low_mask);
-						TwodVertex compact = word_idx * NBPE + bit_idx;
+						//						int bit_idx = __builtin_popcountl(low_mask);
+						//						TwodVertex compact = word_idx * NBPE + bit_idx;
 						TwodVertex src_c = word_idx / get_bitmap_size_local(); // TODO:
 						TwodVertex non_zero_off = bmp_row_sums + __builtin_popcountl(row_bitmap_i & low_mask);
 						int64_t src_orig =
@@ -1368,11 +1368,11 @@ public:
 	//-------------------------------------------------------------//
 
 	void botto_up_print_stt(int64_t num_blocks, int64_t num_vertexes, int* nq_count) {
-		int64_t send_stt[2] = { num_vertexes, num_blocks };
-		int64_t sum_stt[2];
-		int64_t max_stt[2];
-		MPI_Reduce(send_stt, sum_stt, 2, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(send_stt, max_stt, 2, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
+	  //		int64_t send_stt[2] = { num_vertexes, num_blocks };
+		int64_t sum_stt[2]  = { num_vertexes, num_blocks };
+		int64_t max_stt[2]  = { num_vertexes, num_blocks };
+		//		MPI_Reduce(send_stt, sum_stt, 2, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(send_stt, max_stt, 2, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
 		if(mpi.isMaster() && sum_stt[0] != 0) {
 			print_with_prefix("Bottom-Up using List. Total %f M Vertexes / %f M Blocks = %f Max %f %%+ Vertexes %f %%+ Blocks",
 					to_mega(sum_stt[0]), to_mega(sum_stt[1]), to_mega(sum_stt[0]) / to_mega(sum_stt[1]),
@@ -1385,9 +1385,10 @@ public:
 		int64_t phase_count[count_length];
 		int64_t phase_recv[count_length];
 		for(int i = 0; i < count_length; ++i) {
-			phase_count[i] = nq_count[(start_proc + i) & size_mask];
+		  phase_recv[i] = phase_count[i] = nq_count[(start_proc + i) & size_mask];
 		}
-		MPI_Reduce(phase_count, phase_recv, count_length, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(phase_count, phase_recv, count_length, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		
 		if(mpi.isMaster()) {
 			int64_t total_nq = 0;
 			for(int i = 0; i < count_length; ++i) {
@@ -1765,7 +1766,7 @@ public:
 				BitmapType vis_bit = bit_flags & (-bit_flags);
 				BitmapType mask = vis_bit - 1;
 				bit_flags &= ~vis_bit;
-				int idx = __builtin_popcountl(mask);
+				//				int idx = __builtin_popcountl(mask);
 				TwodVertex non_zero_idx = bmp_row_sums + __builtin_popcountl(row_bmp_i & mask);
 				LocalVertex tgt_orig = orig_vertexes[non_zero_idx];
 				// short cut
@@ -1886,7 +1887,7 @@ public:
 		thread_sync_.barrier();
 #endif
 		int tid = omp_get_thread_num();
-		int num_threads = omp_get_num_threads();
+		//		int num_threads = omp_get_num_threads();
 
 #if 1 // dynamic partitioning
 		int visited_count = 0;
@@ -2071,7 +2072,10 @@ public:
 			int64_t global_nq_size;
 		} scatter_buffer[mpi.size_2dc], recv_nq_size;
 		// gather information within the processor row
-		MPI_Reduce(visited_count, red_nq_size, mpi.size_2dc, MPI_INT, MPI_SUM, 0, mpi.comm_2dr);
+		//		MPI_Reduce(visited_count, red_nq_size, mpi.size_2dc, MPI_INT, MPI_SUM, 0, mpi.comm_2dr);
+		for(int i=0;i<mpi.size_2dc;i++)
+		  red_nq_size[i] = visited_count[i];
+		
 		if(mpi.rank_2dr == 0) {
 			int max_nq_size = 0, sum_nq_size = 0;
 			int64_t global_nq_size;
@@ -2671,8 +2675,9 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 			profiling::g_pis.submitCounter(num_edge_bottom_up_, "bottom-up edge relax", current_level_);
 
 		int64_t send_num_edges[] = { num_edge_top_down_, num_td_large_edge_, num_edge_bottom_up_ };
-		int64_t recv_num_edges[3];
-		MPI_Reduce(send_num_edges, recv_num_edges, 3, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		int64_t recv_num_edges[] = { num_edge_top_down_, num_td_large_edge_, num_edge_bottom_up_ };
+		//		MPI_Reduce(send_num_edges, recv_num_edges, 3, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		
 		num_edge_top_down_ = recv_num_edges[0];
 		num_td_large_edge_ = recv_num_edges[1];
 		num_edge_bottom_up_ = recv_num_edges[2];
@@ -2724,9 +2729,10 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 
 #if VERVOSE_MODE
 		int64_t send_num_bufs[2] = { a2a_comm->get_last_send_size(), nq_empty_buffer_.size() };
-		int64_t sum_num_bufs[2], max_num_bufs[2];
-		MPI_Reduce(send_num_bufs, sum_num_bufs, 2, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(send_num_bufs, max_num_bufs, 2, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
+		int64_t sum_num_bufs[2]  = { a2a_comm->get_last_send_size(), nq_empty_buffer_.size() };
+		int64_t max_num_bufs[2]  = { a2a_comm->get_last_send_size(), nq_empty_buffer_.size() };
+		//		MPI_Reduce(send_num_bufs, sum_num_bufs, 2, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(send_num_bufs, max_num_bufs, 2, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
 		if(mpi.isMaster()) {
 			double nq_rate = (double)global_nq_size_ / graph_.num_global_verts_;
 			double nq_unvis_rate = (double)global_nq_size_ / global_unvisited_vertices;
@@ -2808,15 +2814,22 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 	if(mpi.isMaster()) print_with_prefix("Time of BFS: %f ms", (MPI_Wtime() - start_time) * 1000.0);
 	int64_t total_edge_relax = total_edge_top_down + total_edge_bottom_up;
 	int time_cnt = 2, cnt_cnt = 9;
-	double send_time[] = { fold_time, expand_time }, sum_time[time_cnt], max_time[time_cnt];
+	double send_time[] = { fold_time, expand_time };
+	double sum_time[]  = { fold_time, expand_time };
+	double max_time[]  = { fold_time, expand_time };
 	int64_t send_cnt[] = { g_tp_comm, g_bu_pred_comm, g_bu_bitmap_comm,
 			g_bu_list_comm, g_expand_bitmap_comm, g_expand_list_comm,
 			total_edge_top_down, total_edge_bottom_up, total_edge_relax };
-	int64_t sum_cnt[cnt_cnt], max_cnt[cnt_cnt];
-	MPI_Reduce(send_time, sum_time, time_cnt, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	MPI_Reduce(send_time, max_time, time_cnt, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-	MPI_Reduce(send_cnt, sum_cnt, cnt_cnt, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
-	MPI_Reduce(send_cnt, max_cnt, cnt_cnt, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
+	int64_t sum_cnt[] = { g_tp_comm, g_bu_pred_comm, g_bu_bitmap_comm,
+                        g_bu_list_comm, g_expand_bitmap_comm, g_expand_list_comm,
+                        total_edge_top_down, total_edge_bottom_up, total_edge_relax };
+	int64_t max_cnt[]  = { g_tp_comm, g_bu_pred_comm, g_bu_bitmap_comm,
+                        g_bu_list_comm, g_expand_bitmap_comm, g_expand_list_comm,
+                        total_edge_top_down, total_edge_bottom_up, total_edge_relax };
+	//	MPI_Reduce(send_time, sum_time, time_cnt, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	//	MPI_Reduce(send_time, max_time, time_cnt, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+	//	MPI_Reduce(send_cnt, sum_cnt, cnt_cnt, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+	//	MPI_Reduce(send_cnt, max_cnt, cnt_cnt, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
 	if(mpi.isMaster()) {
 		printTime("Avg time of fold: %f ms, %f %%+", sum_time, max_time, 0);
 		printTime("Avg time of expand: %f ms, %f %%+", sum_time, max_time, 1);

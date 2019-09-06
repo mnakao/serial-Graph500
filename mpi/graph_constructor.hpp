@@ -420,10 +420,10 @@ private:
 
 #if VERVOSE_MODE
 		int64_t send_rowbmp[3] = { total_vertexes_, src_bitmap_size*NBPE, 0 };
-		int64_t max_rowbmp[3];
-		int64_t sum_rowbmp[3];
-		MPI_Reduce(send_rowbmp, sum_rowbmp, 3, MpiTypeOf<int64_t>::type, MPI_SUM, 0, mpi.comm_2d);
-		MPI_Reduce(send_rowbmp, max_rowbmp, 3, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
+		int64_t max_rowbmp[3]  = { total_vertexes_, src_bitmap_size*NBPE, 0 };
+		int64_t sum_rowbmp[3]  = { total_vertexes_, src_bitmap_size*NBPE, 0 };
+		//		MPI_Reduce(send_rowbmp, sum_rowbmp, 3, MpiTypeOf<int64_t>::type, MPI_SUM, 0, mpi.comm_2d);
+		//		MPI_Reduce(send_rowbmp, max_rowbmp, 3, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
 		if(mpi.isMaster()) {
 			print_with_prefix("DC total vertexes. Total %f M / %f M = %f %% Avg %f M / %f M Max %f %%+",
 					to_mega(sum_rowbmp[0]), to_mega(sum_rowbmp[1]), to_mega(sum_rowbmp[0]) / to_mega(sum_rowbmp[1]) * 100,
@@ -918,10 +918,10 @@ private:
 
 #if VERVOSE_MODE
 		int64_t send_rowbmp[5] = { non_zero_rows, row_bitmap_length*NBPE, num_local_edges, 0, 0 };
-		int64_t max_rowbmp[5];
-		int64_t sum_rowbmp[5];
-		MPI_Reduce(send_rowbmp, sum_rowbmp, 5, MpiTypeOf<int64_t>::type, MPI_SUM, 0, mpi.comm_2d);
-		MPI_Reduce(send_rowbmp, max_rowbmp, 5, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
+		int64_t max_rowbmp[5]  = { non_zero_rows, row_bitmap_length*NBPE, num_local_edges, 0, 0 };
+		int64_t sum_rowbmp[5]  = { non_zero_rows, row_bitmap_length*NBPE, num_local_edges, 0, 0 };
+		//		MPI_Reduce(send_rowbmp, sum_rowbmp, 5, MpiTypeOf<int64_t>::type, MPI_SUM, 0, mpi.comm_2d);
+		//		MPI_Reduce(send_rowbmp, max_rowbmp, 5, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
 		if(mpi.isMaster()) {
 			int64_t local_bits_max = int64_t(1) << local_bits_;
 			print_with_prefix("non zero rows. Total %f M / %f M = %f %% Avg %f M / %f M Max %f %%+",
@@ -1392,10 +1392,10 @@ private:
 		const int64_t old_num_edges = wide_row_starts_[num_wide_rows_];
 		wide_row_starts_[num_wide_rows_] = rowstart_new;
 
-		 int64_t num_edge_sum[2] = {0};
-		 int64_t num_edge[2] = {old_num_edges, rowstart_new};
-		MPI_Reduce(num_edge, num_edge_sum, 2, MPI_INT64_T, MPI_SUM, 0, mpi.comm_2d);
-		if(mpi.isMaster()) print_with_prefix("# of edges is reduced. Total %zd -> %zd Diff %f %%",
+		 int64_t num_edge_sum[2] = {old_num_edges, rowstart_new};
+		 //		 int64_t num_edge[2] = {old_num_edges, rowstart_new};
+		 //		MPI_Reduce(num_edge, num_edge_sum, 2, MPI_INT64_T, MPI_SUM, 0, mpi.comm_2d);
+		 if(mpi.isMaster()) print_with_prefix("# of edges is reduced. Total %zd -> %zd Diff %f %%",
 				num_edge_sum[0], num_edge_sum[1], (double)(num_edge_sum[0] - num_edge_sum[1])/(double)num_edge_sum[0]*100.0);
 		g.num_global_edges_ = num_edge_sum[1];
 	}

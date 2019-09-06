@@ -437,7 +437,7 @@ public:
 		finish_count += finish_count__;
 
 		while(finish_count > 0) {
-			if(empty_list.size() == MAX_REQUESTS) {
+		  if((int)empty_list.size() == MAX_REQUESTS) {
 				fprintf(IMD_OUT, "Error: No active request\n");
 				throw "Error: No active request";
 			}

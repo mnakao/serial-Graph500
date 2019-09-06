@@ -88,10 +88,16 @@ public:
 		int64_t sum_wait_comm[steps];
 		int64_t max_compute[steps];
 		int64_t max_wait_comm[steps];
-		MPI_Reduce(&compute_time_[0], sum_compute, steps, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(&comm_wait_time_[0], sum_wait_comm, steps, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(&compute_time_[0], max_compute, steps, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
-		MPI_Reduce(&comm_wait_time_[0], max_wait_comm, steps, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
+		for(int i = 0; i < steps; ++i) {
+		  sum_compute[i]   = compute_time_[i];
+		  sum_wait_comm[i] = comm_wait_time_[i];
+		  max_compute[i]   = compute_time_[i];
+		  max_wait_comm[i] = comm_wait_time_[i];
+		}
+		//		MPI_Reduce(&compute_time_[0], sum_compute, steps, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(&comm_wait_time_[0], sum_wait_comm, steps, MpiTypeOf<int64_t>::type, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(&compute_time_[0], max_compute, steps, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(&comm_wait_time_[0], max_wait_comm, steps, MpiTypeOf<int64_t>::type, MPI_MAX, 0, MPI_COMM_WORLD);
 		if(mpi.isMaster()) {
 			for(int i = 0; i < steps; ++i) {
 				double comp_avg = (double)sum_compute[i] / mpi.size_2d / 1000.0;

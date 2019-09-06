@@ -311,8 +311,8 @@ void x_free_check(void* ptr) {
 	}
 }
 void print_max_memory_usage() {
-	int64_t g_max = 0;
-	MPI_Reduce(&g_memory_usage, &g_max, 1, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
+        int64_t g_max = g_memory_usage;
+	//	MPI_Reduce(&g_memory_usage, &g_max, 1, MpiTypeOf<int64_t>::type, MPI_MAX, 0, mpi.comm_2d);
 	if(mpi.isMaster()) {
 		fprintf(IMD_OUT, "[MEM-MAX] %f MB\n", (double)g_max / (1024*1024));
 	}
@@ -2989,11 +2989,11 @@ private:
 		double *max_times = new double[num_times];
 
 		for(int i = 0; i < num_times; ++i) {
-			dbl_times[i] = times_[i].span;
+		  max_times[i] = sum_times[i] = dbl_times[i] = times_[i].span;
 		}
 
-		MPI_Reduce(dbl_times, sum_times, num_times, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(dbl_times, max_times, num_times, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(dbl_times, sum_times, num_times, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(dbl_times, max_times, num_times, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
 		if(mpi.isMaster()) {
 			for(int i = 0; i < num_times; ++i) {
@@ -3042,11 +3042,11 @@ private:
 		int64_t *max_times = new int64_t[num_times];
 
 		for(int i = 0; i < num_times; ++i) {
-			dbl_times[i] = counters_[i].count;
+		  max_times[i] = sum_times[i] = dbl_times[i] = counters_[i].count;
 		}
 
-		MPI_Reduce(dbl_times, sum_times, num_times, MPI_INT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
-		MPI_Reduce(dbl_times, max_times, num_times, MPI_INT64_T, MPI_MAX, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(dbl_times, sum_times, num_times, MPI_INT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+		//		MPI_Reduce(dbl_times, max_times, num_times, MPI_INT64_T, MPI_MAX, 0, MPI_COMM_WORLD);
 
 		if(mpi.isMaster()) {
 			for(int i = 0; i < num_times; ++i) {
