@@ -44,8 +44,6 @@
 #define TOP_DOWN_RECV_LB 1
 #define BOTTOM_UP_OVERLAP_PFS 1
 
-// for K computer
-#define ENABLE_FJMPI_RDMA 0
 // 0: disable, 1: 1D, 2: 2D
 #define ENABLE_MY_ALLGATHER 1
 #define ENABLE_INLINE_ATOMICS 0
@@ -101,16 +99,6 @@
 #define WITH_VALGRIND 0
 
 #define SGI_OMPLACE_BUG 0
-
-#ifdef __FUJITSU
-#	define ENABLE_FJMPI 1
-#else // #ifdef __FUJITSU
-#	define ENABLE_FJMPI 0
-#	undef ENABLE_FUJI_PROF
-#	define ENABLE_FUJI_PROF 0
-//#	undef ENABLE_FJMPI_RDMA
-//#	define ENABLE_FJMPI_RDMA 0
-#endif // #ifdef __FUJITSU
 
 #if VTRACE
 #	undef REPORT_GEN_RPGRESS

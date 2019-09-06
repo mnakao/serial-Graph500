@@ -25,9 +25,6 @@
 #if BACKTRACE_ON_SIGNAL
 #include <signal.h>
 #endif
-#if ENABLE_FJMPI
-#include <mpi-ext.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -1330,96 +1327,10 @@ static void setup_rank_map(COMM_2D& comm) {
 	}
 }
 
-#if ENABLE_FJMPI
-static void parse_row_dims(bool* rdim, const char* input) {
-	memset(rdim, 0x00, sizeof(bool)*6);
-	while(*input) {
-		switch(*(input++)) {
-		case 'x':
-			rdim[0] = true;
-			break;
-		case 'y':
-			rdim[1] = true;
-			break;
-		case 'z':
-			rdim[2] = true;
-			break;
-		case 'a':
-			rdim[3] = true;
-			break;
-		case 'b':
-			rdim[4] = true;
-			break;
-		case 'c':
-			rdim[5] = true;
-			break;
-		}
-	}
-}
-
-static void print_dims(const char* prefix, std::vector<int>& dims) {
-	print_prefix();
-	fprintf(IMD_OUT, "%s%d", prefix, dims[0]);
-	for(int i = 1; i < int(dims.size()); ++i) {
-		fprintf(IMD_OUT, "x%d", dims[i]);
-	}
-	fprintf(IMD_OUT, "\n");
-}
-#endif
-
 static void setup_2dcomm()
 {
 	bool success = false;
 	mpi.isMultiDimAvailable = false;
-
-#if ENABLE_FJMPI
-	const char* tofu_6d = getenv("TOFU_6D");
-	if(!success && tofu_6d) {
-		int rank6d[6];
-		int size6d[6];
-		FJMPI_Topology_rel_rank2xyzabc(mpi.rank, &rank6d[0], &rank6d[1], &rank6d[2], &rank6d[3], &rank6d[4], &rank6d[5]);
-		MPI_Allreduce(rank6d, size6d, 6, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-		int total = 1;
-		for(int i = 0; i < 6; ++i) {
-			total *= ++size6d[i];
-		}
-		if(mpi.isMaster()) print_with_prefix("Detected dimension %dx%dx%dx%dx%dx%d = %d", size6d[0], size6d[1], size6d[2], size6d[3], size6d[4], size6d[5], mpi.size);
-		if(total != mpi.size) {
-			if(mpi.isMaster()) print_with_prefix("Mismatch error!");
-		}
-		else {
-			bool rdim[6] = {0};
-			parse_row_dims(rdim, tofu_6d);
-			std::vector<int> ss_r, rs_r;
-			std::vector<int> ss_c, rs_c;
-			for(int i = 0; i < 6; ++i) {
-				if(rdim[i]) {
-					ss_r.push_back(size6d[i]);
-					rs_r.push_back(rank6d[i]);
-				}
-				else {
-					ss_c.push_back(size6d[i]);
-					rs_c.push_back(rank6d[i]);
-				}
-			}
-			compute_rank(ss_c, rs_c, mpi.comm_r);
-			if(mpi.isMaster()) print_dims("R: ", ss_r);
-			compute_rank(ss_r, rs_r, mpi.comm_c);
-			if(mpi.isMaster()) print_dims("C: ", ss_c);
-
-			mpi.size_2dr = mpi.comm_c.size;
-			mpi.size_2dc = mpi.comm_r.size;
-			mpi.rank_2dr = mpi.comm_c.rank;
-			mpi.rank_2dc = mpi.comm_r.rank;
-			mpi.isMultiDimAvailable = true;
-
-			//print_with_prefix("rank: (%d,%d,%d,%d,%d,%d) -> (%d,%d)",
-			//		rank6d[0], rank6d[1], rank6d[2], rank6d[3], rank6d[4], rank6d[5], mpi.rank_2dr, mpi.rank_2dc);
-
-			success = true;
-		}
-	}
-#endif // #if ENABLE_FJMPI
 
 	const char* virt_4d = getenv("VIRT_4D");
 	if(!success && virt_4d) {
@@ -1579,9 +1490,6 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 	MPI_Init_thread(&argc, &argv, reqeust_level, &mpi.thread_level);
 	MPI_Comm_rank(MPI_COMM_WORLD, &mpi.rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &mpi.size);
-#if ENABLE_FJMPI_RDMA
-	FJMPI_Rdma_init();
-#endif
 #if PRINT_WITH_TIME
 	global_clock.init();
 #endif
@@ -1709,9 +1617,6 @@ void cleanup_globals()
 
 #if BACKTRACE_ON_SIGNAL
 	backtrace::thread_join();
-#endif
-#if ENABLE_FJMPI_RDMA
-	FJMPI_Rdma_finalize();
 #endif
 	MPI_Finalize();
 }
