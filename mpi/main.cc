@@ -88,7 +88,7 @@ void graph500_bfs(int SCALE, int edgefactor)
 		double time_left = PRE_EXEC_TIME;
         for(int c = root_start; time_left > 0.0; ++c) {
                 if(mpi.isMaster())  print_with_prefix("========== Pre Running BFS %d ==========", c);
-                MPI_Barrier(mpi.comm_2d);
+		//                MPI_Barrier(mpi.comm_2d);
                 double bfs_time = MPI_Wtime();
                 benchmark->run_bfs(bfs_roots[c % num_bfs_roots], pred);
                 bfs_time = MPI_Wtime() - bfs_time;
@@ -107,7 +107,7 @@ void graph500_bfs(int SCALE, int edgefactor)
 #if ENABLE_FUJI_PROF
 		fapp_start("bfs", i, 1);
 #endif
-		MPI_Barrier(mpi.comm_2d);
+		//		MPI_Barrier(mpi.comm_2d);
 		PROF(profiling::g_pis.reset());
 		bfs_times[i] = MPI_Wtime();
 		benchmark->run_bfs(bfs_roots[i], pred);

@@ -814,7 +814,7 @@ private:
 			int64_t e_start = g.row_starts_[non_zero_idx];
 			g.isolated_edges_[non_zero_idx] = g.edge_array_[e_start];
 		}
-		MPI_Barrier(mpi.comm_2d);
+		//		MPI_Barrier(mpi.comm_2d);
 
 		if(mpi.isMaster()) print_with_prefix("Compacting edge array.");
 		// This loop cannot be parallelized.

@@ -214,7 +214,7 @@ struct GLOBAL_CLOCK {
 	struct timeval l;
 	int64_t clock_start;
 	void init() {
-		MPI_Barrier(MPI_COMM_WORLD);
+	  //		MPI_Barrier(MPI_COMM_WORLD);
 		gettimeofday(&l, NULL);
 		clock_start = ((int64_t)l.tv_sec*1000000 + l.tv_usec);
 	}
@@ -426,7 +426,7 @@ void* shared_malloc(size_t nbytes) {
 		}
 	}
 
-	MPI_Barrier(comm);
+	//	MPI_Barrier(comm);
 
 	if(rank == 0) {
 		// release the memory when the last process is detached.
