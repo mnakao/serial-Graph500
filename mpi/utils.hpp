@@ -410,7 +410,7 @@ void* shared_malloc(size_t nbytes) {
 		}
 	}
 
-	MPI_Bcast(&shm_key, 1, MpiTypeOf<key_t>::type, 0, comm);
+	// MPI_Bcast(&shm_key, 1, MpiTypeOf<key_t>::type, 0, comm);
 
 	if(rank != 0) {
 		shmid = shmget(shm_key, 0, 0);
@@ -449,7 +449,7 @@ void test_shared_memory() {
 	if(mpi.rank_z == 0) {
 		*mem = ref_val = mpi.rank;
 	}
-	MPI_Bcast(&ref_val, 1, MpiTypeOf<int>::type, 0, mpi.comm_z);
+	// MPI_Bcast(&ref_val, 1, MpiTypeOf<int>::type, 0, mpi.comm_z);
 	int result = (*mem == ref_val), global_result;
 	shared_free(mem);
 	MPI_Allreduce(&result, &global_result, 1, MpiTypeOf<int>::type, MPI_LOR, MPI_COMM_WORLD);

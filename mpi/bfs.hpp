@@ -483,8 +483,8 @@ public:
 				int64_t reordered = graph_.reorder_map_[root_local];
 				root_reordered = (reordered * mpi.size_2d) + root_owner;
 
-				MPI_Bcast(&root_reordered, 1, MpiTypeOf<int64_t>::type,
-						root_c, mpi.comm_2dr);
+				// MPI_Bcast(&root_reordered, 1, MpiTypeOf<int64_t>::type,
+				//           root_c, mpi.comm_2dr);
 
 				// update pred
 				pred_[root_local] = root;
@@ -495,8 +495,8 @@ public:
 				((BitmapType*)new_visited_)[word_idx] |= BitmapType(1) << bit_idx;
 			}
 			else {
-				MPI_Bcast(&root_reordered, 1, MpiTypeOf<int64_t>::type,
-						root_c, mpi.comm_2dr);
+			  // MPI_Bcast(&root_reordered, 1, MpiTypeOf<int64_t>::type,
+			  //           root_c, mpi.comm_2dr);
 			}
 
 			// update CQ

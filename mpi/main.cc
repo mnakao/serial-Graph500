@@ -96,7 +96,7 @@ void graph500_bfs(int SCALE, int edgefactor)
                         print_with_prefix("Time for BFS %d is %f", c, bfs_time);
                         time_left -= bfs_time;
                 }
-               MPI_Bcast(&time_left, 1, MPI_DOUBLE, 0, mpi.comm_2d);
+		// MPI_Bcast(&time_left, 1, MPI_DOUBLE, 0, mpi.comm_2d);
         }
 /////////////////////
 	for(int i = root_start; i < num_bfs_roots; ++i) {
