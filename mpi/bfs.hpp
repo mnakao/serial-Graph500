@@ -9,18 +9,10 @@
 #define BFS_HPP_
 
 #include <pthread.h>
-
 #include <deque>
-
-#if CUDA_ENABLED
-#include "gpu_host.hpp"
-#endif
-
 #include "utils.hpp"
 #include "fiber.hpp"
 #include "abstract_comm.hpp"
-#include "mpi_comm.hpp"
-#include "fjmpi_comm.hpp"
 #include "bottom_up_comm.hpp"
 
 #include "low_level_func.h"

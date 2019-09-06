@@ -4,7 +4,6 @@ SCOREP = false
 
 # default values
 LDFLAGS := -fopenmp -g # -pg
-NVCCFLAGS := -Drestrict=__restrict__ -Xcompiler -fopenmp,-ffast-math,-Wall -arch=compute_20 -code=sm_20
 
 VERBOSE = false
 VERTEX_REORDERING = 0
@@ -30,24 +29,16 @@ FCC_BASE := -Kopenmp -Xg -Drestrict=__restrict__ -D__STDC_CONSTANT_MACROS -D__ST
 MPICC := mpicc
 MPICPP := mpicxx
 
-CUDALIB := -L$(CUDA_PATH)/lib64 -lcudart -lcuda
-NVCC := nvcc
-
-INC := # -I$(CUDA_PATH)/include
 BINS := runnable
 OBJS := main.o low_level_func.o ../generator/splittable_mrg.o
-CUOBJ := cuda_kernel.o
 LIBS := -lm
 
 ifeq ($(SW), GNU3)
 CFLAGS := $(GCC_BASE) -O3 -DNDEBUG
-NVCCFLAGS := $(NVFLAG_BASE) -g -O3 -DNDEBUG -keep
 LIBS := $(LIBS) -lnuma
 endif
 ifeq ($(SW), GNU0)
 CFLAGS := $(GCC_BASE) -O0
-#NVCCFLAGS := $(NVFLAG_BASE) -g -G -O0
-NVCCFLAGS := $(NVFLAG_BASE) -g -O0
 LIBS := $(LIBS) -lnuma
 endif
 ifeq ($(SW), FUJI3)
@@ -90,7 +81,6 @@ MPICC := icc
 MPICPP := icpc
 CFLAGS := -ipo -no-prec-div -openmp -g3 -Drestrict=__restrict__ -O3 -DNDEBUG
 #CFLAGS := -ipo -openmp -g3 -Drestrict=__restrict__ -O2 -DNDEBUG
-NVCCFLAGS := $(NVFLAG_BASE) -g -O3 -DNDEBUG -keep
 LDFLAGS := -openmp -g
 LIBS := $(LIBS) -lnuma -lmpi
 endif
@@ -98,7 +88,6 @@ ifeq ($(SW), INTEL0)
 MPICC := icc
 MPICPP := icpc
 CFLAGS := -ipo -no-prec-div -openmp -g3 -Drestrict=__restrict__ -O0
-NVCCFLAGS := $(NVFLAG_BASE) -g -G -O0
 LDFLAGS := -openmp -g
 LIBS := $(LIBS) -lnuma -lmpi
 endif
@@ -106,7 +95,6 @@ ifeq ($(SW), FXGNU3)
 MPICC := gcc
 MPICPP := g++
 CFLAGS := -fopenmp -g -Wall -Drestrict=__restrict__ -O3 -DNDEBUG -ffast-math # -g -pg
-NVCCFLAGS := $(NVFLAG_BASE) -g -O3 -DNDEBUG -keep
 LDFLAGS := -fopenmp -g # -g -pg
 INC := $(INC) -I/opt/FJSVtclang/GM-1.2.0-16/include/mpi/fujitsu
 LIBS := -L/opt/FJSVtclang/GM-1.2.0-16/lib64 -lm -lmpi -lmpi_cxx #-ltrt -ltrtmetcpp -ltrtmet_c
@@ -116,8 +104,6 @@ MPICC := gcc
 MPICPP := g++
 CFLAGS := -fopenmp -g3 -Wall -Drestrict=__restrict__ -O0 -ffast-math
 #CFLAGS := -g3 -Wall -Drestrict=__restrict__ -O0 -ffast-math
-#NVCCFLAGS := $(NVFLAG_BASE) -g -G -O0
-NVCCFLAGS := $(NVFLAG_BASE) -g -O0
 LDFLAGS := -fopenmp -g # -g -pg
 INC := $(INC) -I/opt/FJSVtclang/GM-1.2.0-16/include/mpi/fujitsu
 LIBS := -L/opt/FJSVtclang/GM-1.2.0-16/lib64 -lm -lmpi -lmpi_cxx #-ltrt -ltrtmetcpp -ltrtmet_c
@@ -139,14 +125,11 @@ all: cpu
 cpu: $(OBJS)
 	$(MPICPP) $(LDFLAGS) -o runnable $(OBJS) $(LIBS)
 
-gpu: $(OBJS) $(CUOBJ)
-	$(MPICPP) $(LDFLAGS) -o runnable $(OBJS) $(CUOBJ) $(LIBS) $(CUDALIB)
-
 gnu_func.o: gnu_func.cc
 	cp ../../$*.o_ $*.o
 #	g++ -c -g -O3 -Wall $< -o $*.o
 
-.SUFFIXES: .o .c .cpp .cc .cu
+.SUFFIXES: .o .c .cpp .cc
 
 .c.o:
 	$(MPICC) $(INC) -c $(CFLAGS) $< -o $*.o
@@ -156,9 +139,6 @@ gnu_func.o: gnu_func.cc
 
 .cc.o:
 	$(MPICPP) $(INC) -c $(CPPFLAGS) $< -o $*.o
-
-.cu.o:
-	$(NVCC) -c $(NVCCFLAGS) $< -o $*.o
 
 .PHONY: clean
 clean:
