@@ -473,14 +473,16 @@ private:
 				cache_aligned_xmalloc((src_bitmap_size+1)*sizeof(TwodVertex)));
 
 		if(mpi.isMaster()) print_with_prefix("Transferring wide row length.");
-		MPI_Alltoall(
-				wide_row_length_,
-				local_wide_row_size(),
-				MpiTypeOf<int64_t>::type,
-				data.wide_row_starts_ + 1,
-				local_wide_row_size(),
-				MpiTypeOf<int64_t>::type,
-				mpi.comm_2dr);
+		//		MPI_Alltoall(
+		//				wide_row_length_,
+		//				local_wide_row_size(),
+		//				MpiTypeOf<int64_t>::type,
+		//				data.wide_row_starts_ + 1,
+		//				local_wide_row_size(),
+		//				MpiTypeOf<int64_t>::type,
+		//				mpi.comm_2dr);
+		for(int i=0;i<local_wide_row_size();i++)
+		  data.wide_row_starts_[i+1] = wide_row_length_[i];
 
 		if(mpi.isMaster()) print_with_prefix("Computing edge offset.");
 		data.wide_row_starts_[0] = 0;
@@ -495,14 +497,16 @@ private:
 #endif
 
 		if(mpi.isMaster()) print_with_prefix("Transferring row bitmap.");
-		MPI_Alltoall(
-				row_bitmap_,
-				local_bitmap_size(),
-				MpiTypeOf<BitmapType>::type,
-				data.row_bitmap_,
-				local_bitmap_size(),
-				MpiTypeOf<BitmapType>::type,
-				mpi.comm_2dr);
+		//		MPI_Alltoall(
+		//				row_bitmap_,
+		//				local_bitmap_size(),
+		//				MpiTypeOf<BitmapType>::type,
+		//				data.row_bitmap_,
+		//				local_bitmap_size(),
+		//				MpiTypeOf<BitmapType>::type,
+		//				mpi.comm_2dr);
+		for(int i=0;i<local_bitmap_size();i++)
+		  data.row_bitmap_[i] = row_bitmap_[i];
 
 		if(mpi.isMaster()) print_with_prefix("Re making row sums bitmap.");
 		data.row_sums_[0] = 0;
@@ -780,7 +784,7 @@ private:
 			} // #pragma omp parallel
 
 #if NETWORK_PROBLEM_AYALISYS
-			if(mpi.isMaster()) print_with_prefix("MPI_Alltoall...");
+			//			if(mpi.isMaster()) print_with_prefix("MPI_Alltoall...");
 #endif
 
 			int64_t* recv_edges = scatter.scatter(edges_to_send);

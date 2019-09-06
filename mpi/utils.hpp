@@ -1652,8 +1652,10 @@ int allgatherv(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm, int comm_si
 
 template <typename T>
 void alltoall(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm) {
-	MPI_Alltoall(sendbuf, sendcount, MpiTypeOf<T>::type,
-			recvbuf, sendcount, MpiTypeOf<T>::type, comm);
+  //	MPI_Alltoall(sendbuf, sendcount, MpiTypeOf<T>::type,
+  //			recvbuf, sendcount, MpiTypeOf<T>::type, comm);
+  for(int i=0;i<sendcount;i++)
+    recvbuf[i] = sendbuf[i];
 }
 
 /**
@@ -1671,15 +1673,20 @@ T* alltoallv(T* sendbuf, int* sendcount,
 	for(int r = 0; r < comm_size; ++r) {
 		sendoffset[r + 1] = sendoffset[r] + sendcount[r];
 	}
-	MPI_Alltoall(sendcount, 1, MPI_INT, recvcount, 1, MPI_INT, comm);
+	//	MPI_Alltoall(sendcount, 1, MPI_INT, recvcount, 1, MPI_INT, comm);
+	recvcount[0] = sendcount[0];
+	
 	// calculate offsets
 	recvoffset[0] = 0;
 	for(int r = 0; r < comm_size; ++r) {
 		recvoffset[r + 1] = recvoffset[r] + recvcount[r];
 	}
 	T* recv_data = static_cast<T*>(xMPI_Alloc_mem(recvoffset[comm_size] * sizeof(T)));
-	MPI_Alltoallv(sendbuf, sendcount, sendoffset, MpiTypeOf<T>::type,
-			recv_data, recvcount, recvoffset, MpiTypeOf<T>::type, comm);
+	//	MPI_Alltoallv(sendbuf, sendcount, sendoffset, MpiTypeOf<T>::type,
+	//			recv_data, recvcount, recvoffset, MpiTypeOf<T>::type, comm);
+	for(int i=0;i<recvcount[0];i++)
+	  recv_data[i] = sendbuf[i];  // sendoffset[0] = recvoffset[0] = 0;
+	
 	return recv_data;
 }
 
@@ -1966,8 +1973,11 @@ public:
 	template <typename T>
 	T* gather(T* send_data) {
 		T* recv_data = static_cast<T*>(xMPI_Alloc_mem(send_offsets_[comm_size_] * sizeof(T)));
-		MPI_Alltoallv(send_data, recv_counts_, recv_offsets_, MpiTypeOf<T>::type,
-				recv_data, send_counts_, send_offsets_, MpiTypeOf<T>::type, comm_);
+		//		MPI_Alltoallv(send_data, recv_counts_, recv_offsets_, MpiTypeOf<T>::type,
+		//				recv_data, send_counts_, send_offsets_, MpiTypeOf<T>::type, comm_);
+		for(int i=0;i<send_counts_[0];i++)
+		  recv_data[send_offsets_[0] + i] = send_data[recv_offsets_[0] + i];
+		
 		return recv_data;
 	}
 
@@ -1982,7 +1992,8 @@ public:
 		for(int r = 0; r < comm_size_; ++r) {
 			recv_offsets_[r + 1] = recv_offsets_[r] + recv_counts_[r];
 		}
-		MPI_Alltoall(send_counts_, 1, MPI_INT, recv_counts_, 1, MPI_INT, comm_);
+		//		MPI_Alltoall(send_counts_, 1, MPI_INT, recv_counts_, 1, MPI_INT, comm_);
+		recv_counts_[0] = send_counts_[0];
 		// calculate offsets
 		recv_offsets_[0] = 0;
 		for(int r = 0; r < comm_size_; ++r) {
@@ -1992,8 +2003,9 @@ public:
 			fprintf(IMD_OUT, "Error: recv_counts_[comm_size_] > recvbufsize");
 			throw "Error: buffer size not enough";
 		}
-		MPI_Alltoallv(sendbuf, send_counts_, send_offsets_, type,
-				recvbuf, recv_counts_, recv_offsets_, type, comm_);
+		//		MPI_Alltoallv(sendbuf, send_counts_, send_offsets_, type,
+		//				recvbuf, recv_counts_, recv_offsets_, type, comm_);
+		memcpy(recvbuf, sendbuf, sizeof(type)*recv_counts_[0]);  // send_offsets_[0] = recv_offsets_[0] = 0
 	}
 
 private:
