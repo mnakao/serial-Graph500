@@ -204,8 +204,8 @@ protected:
 	};
 
 	CommTarget nodes_[2];
-	MPI_Datatype type;
-	MPI_Request req[4];
+        MPI_Datatype type;
+  //	MPI_Request req[4];
 	int recv_top;
 	bool is_active;
         int _length, _tag[2];

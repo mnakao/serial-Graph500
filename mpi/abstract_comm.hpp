@@ -408,28 +408,29 @@ public:
 	MpiRequestManager(int MAX_REQUESTS)
 		: MAX_REQUESTS(MAX_REQUESTS)
 		, finish_count(0)
-		, reqs(new MPI_Request[MAX_REQUESTS])
+		  //		, reqs(new MPI_Request[MAX_REQUESTS])
 		, handlers(new MpiCompletionHandler*[MAX_REQUESTS])
 	{
 		for(int i = 0; i < MAX_REQUESTS; ++i) {
-			reqs[i] = MPI_REQUEST_NULL;
+		  //			reqs[i] = MPI_REQUEST_NULL;
 			empty_list.push_back(i);
 		}
 	}
 	~MpiRequestManager() {
-		delete [] reqs; reqs = NULL;
+	  //		delete [] reqs; reqs = NULL;
 		delete [] handlers; handlers = NULL;
 	}
-	MPI_Request* submit_handler(MpiCompletionHandler* handler) {
-		if(empty_list.size() == 0) {
-			fprintf(IMD_OUT, "No more empty MPI requests...\n");
-			throw "No more empty MPI requests...";
-		}
-		int empty = empty_list.back();
-		empty_list.pop_back();
-		handlers[empty] = handler;
-		return &reqs[empty];
-	}
+  
+  //	MPI_Request* submit_handler(MpiCompletionHandler* handler) {
+  //		if(empty_list.size() == 0) {
+  //			fprintf(IMD_OUT, "No more empty MPI requests...\n");
+  //			throw "No more empty MPI requests...";
+  //		}
+  //		int empty = empty_list.back();
+  //		empty_list.pop_back();
+  //		handlers[empty] = handler;
+  //		return &reqs[empty];
+  //		}
 	void finished() {
 		--finish_count;
 	}
@@ -460,7 +461,7 @@ public:
 private:
 	int MAX_REQUESTS;
 	int finish_count;
-	MPI_Request *reqs;
+  //	MPI_Request *reqs;
 	MpiCompletionHandler** handlers;
 	std::vector<int> empty_list;
 };

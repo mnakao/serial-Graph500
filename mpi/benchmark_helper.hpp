@@ -25,30 +25,30 @@ public:
 	ProgressReport(int max_progress)
 		: max_progress_(max_progress)
 		, my_progress_(0)
-		, send_req_(new MPI_Request[max_progress]())
-		, recv_req_(NULL)
+		  //		, send_req_(new MPI_Request[max_progress]())
+		  //		, recv_req_(NULL)
 		, send_buf_(new int[max_progress]())
 		, recv_buf_(NULL)
 		, g_progress_(NULL)
 	{
 		for(int i = 0; i < max_progress; ++i) {
-			send_req_[i] = MPI_REQUEST_NULL;
+		  //			send_req_[i] = MPI_REQUEST_NULL;
 			send_buf_[i] = i + 1;
 		}
 		pthread_mutex_init(&thread_sync_, NULL);
 		if(mpi.isMaster()) {
-			recv_req_ = new MPI_Request[mpi.size_2d]();
+		  //			recv_req_ = new MPI_Request[mpi.size_2d]();
 			recv_buf_  = new int[mpi.size_2d]();
 			g_progress_ = new int[mpi.size_2d]();
 			for(int i = 0; i < mpi.size_2d; ++i) {
-				recv_req_[i] = MPI_REQUEST_NULL;
+			  //				recv_req_[i] = MPI_REQUEST_NULL;
 			}
 		}
 	}
 	~ProgressReport() {
 		pthread_mutex_destroy(&thread_sync_);
-		delete [] send_req_; send_req_ = NULL;
-		delete [] recv_req_; recv_req_ = NULL;
+		//		delete [] send_req_; send_req_ = NULL;
+		//delete [] recv_req_; recv_req_ = NULL;
 		delete [] send_buf_; send_buf_ = NULL;
 		delete [] recv_buf_; recv_buf_ = NULL;
 		delete [] g_progress_; g_progress_ = NULL;
@@ -147,8 +147,8 @@ private:
 	pthread_mutex_t thread_sync_;
 	int max_progress_;
 	int my_progress_;
-	MPI_Request *send_req_; // length=max_progress
-	MPI_Request *recv_req_; // length=mpi.size
+  //	MPI_Request *send_req_; // length=max_progress
+  //	MPI_Request *recv_req_; // length=mpi.size
 	int* send_buf_; // length=max_progress
 	int* recv_buf_; // length=mpi.size
 	int* g_progress_; // length=mpi.size
