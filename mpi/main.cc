@@ -27,6 +27,7 @@
 #include "benchmark_helper.hpp"
 #include "bfs.hpp"
 #include "bfs_cpu.hpp"
+#include "timer.hpp"
 
 void graph500_bfs(int SCALE, int edgefactor)
 {
@@ -46,21 +47,27 @@ void graph500_bfs(int SCALE, int edgefactor)
 	BfsOnCPU::printInformation();
 
 	if(mpi.isMaster()) print_with_prefix("Graph generation");
-	double generation_time = MPI_Wtime();
+	//	double generation_time = MPI_Wtime();
+	double generation_time = wtime();
 	generate_graph_spec2010(&edge_list, SCALE, edgefactor);
-	generation_time = MPI_Wtime() - generation_time;
+	//	generation_time = MPI_Wtime() - generation_time;
+	generation_time = wtime() - generation_time;
 
 	if(mpi.isMaster()) print_with_prefix("Graph construction");
 	// Create BFS instance and the *COMMUNICATION THREAD*.
 	BfsOnCPU* benchmark = new BfsOnCPU();
-	double construction_time = MPI_Wtime();
+	//	double construction_time = MPI_Wtime();
+	double construction_time = wtime();
 	benchmark->construct(&edge_list);
-	construction_time = MPI_Wtime() - construction_time;
+	//	construction_time = MPI_Wtime() - construction_time;
+	construction_time = wtime() - construction_time;
 
 	if(mpi.isMaster()) print_with_prefix("Redistributing edge list...");
-	double redistribution_time = MPI_Wtime();
+	//	double redistribution_time = MPI_Wtime();
+	double redistribution_time = wtime();
 	redistribute_edge_2d(&edge_list);
-	redistribution_time = MPI_Wtime() - redistribution_time;
+	//	redistribution_time = MPI_Wtime() - redistribution_time;
+	redistribution_time = wtime() - redistribution_time;
 
 	int64_t bfs_roots[NUM_BFS_ROOTS];
 	int num_bfs_roots = NUM_BFS_ROOTS;
@@ -89,9 +96,11 @@ void graph500_bfs(int SCALE, int edgefactor)
         for(int c = root_start; time_left > 0.0; ++c) {
                 if(mpi.isMaster())  print_with_prefix("========== Pre Running BFS %d ==========", c);
 		//                MPI_Barrier(mpi.comm_2d);
-                double bfs_time = MPI_Wtime();
+		//                double bfs_time = MPI_Wtime();
+		double bfs_time = wtime();
                 benchmark->run_bfs(bfs_roots[c % num_bfs_roots], pred);
-                bfs_time = MPI_Wtime() - bfs_time;
+		//                bfs_time = MPI_Wtime() - bfs_time;
+		bfs_time = wtime() - bfs_time;
                 if(mpi.isMaster()) {
                         print_with_prefix("Time for BFS %d is %f", c, bfs_time);
                         time_left -= bfs_time;
@@ -109,9 +118,11 @@ void graph500_bfs(int SCALE, int edgefactor)
 #endif
 		//		MPI_Barrier(mpi.comm_2d);
 		PROF(profiling::g_pis.reset());
-		bfs_times[i] = MPI_Wtime();
+		//		bfs_times[i] = MPI_Wtime();
+		bfs_times[i] = wtime();
 		benchmark->run_bfs(bfs_roots[i], pred);
-		bfs_times[i] = MPI_Wtime() - bfs_times[i];
+		//		bfs_times[i] = MPI_Wtime() - bfs_times[i];
+		bfs_times[i] = wtime() - bfs_times[i];
 #if ENABLE_FUJI_PROF
 		fapp_stop("bfs", i, 1);
 #endif
@@ -123,7 +134,8 @@ void graph500_bfs(int SCALE, int edgefactor)
 
 		benchmark->get_pred(pred);
 
-		validate_times[i] = MPI_Wtime();
+		//		validate_times[i] = MPI_Wtime();
+		validate_times[i] = wtime();
 		int64_t edge_visit_count = 0;
 #if VALIDATION_LEVEL >= 2
 		result_ok = validate_bfs_result(
@@ -140,7 +152,8 @@ void graph500_bfs(int SCALE, int edgefactor)
 #else
 		edge_visit_count = pf_nedge[SCALE];
 #endif
-		validate_times[i] = MPI_Wtime() - validate_times[i];
+		//		validate_times[i] = MPI_Wtime() - validate_times[i];
+		validate_times[i] = wtime() - validate_times[i];
 		edge_counts[i] = (double)edge_visit_count;
 
 		if(mpi.isMaster()) {

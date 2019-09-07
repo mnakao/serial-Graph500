@@ -14,8 +14,8 @@
 #include "fiber.hpp"
 #include "abstract_comm.hpp"
 #include "bottom_up_comm.hpp"
-
 #include "low_level_func.h"
+#include "timer.hpp"
 
 #define debug(...) debug_print(BFSMN, __VA_ARGS__)
 class BfsBase
@@ -2563,7 +2563,8 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 	TRACER(run_bfs);
 	pred_ = pred;
 #if VERVOSE_MODE
-	double tmp = MPI_Wtime();
+	//	double tmp = MPI_Wtime();
+	double tmp = wtime();
 	double start_time = tmp;
 	double prev_time = tmp;
 	double expand_time = 0.0, fold_time = 0.0;
@@ -2575,8 +2576,10 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 	initialize_memory(pred);
 
 #if VERVOSE_MODE
-	if(mpi.isMaster()) print_with_prefix("Time of initialize memory: %f ms", (MPI_Wtime() - prev_time) * 1000.0);
-	prev_time = MPI_Wtime();
+	//	if(mpi.isMaster()) print_with_prefix("Time of initialize memory: %f ms", (MPI_Wtime() - prev_time) * 1000.0);
+	//	prev_time = MPI_Wtime();
+	if(mpi.isMaster()) print_with_prefix("Time of initialize memory: %f ms", (wtime() - prev_time) * 1000.0);
+	prev_time = wtime();
 #endif
 
 	bool next_forward_or_backward = true; // begin with forward search
@@ -2593,7 +2596,8 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 	first_expand(root);
 
 #if VERVOSE_MODE
-	tmp = MPI_Wtime();
+	//	tmp = MPI_Wtime();
+	tmp = wtime();
 	double cur_expand_time = tmp - prev_time;
 	expand_time += cur_expand_time; prev_time = tmp;
 #endif
@@ -2642,7 +2646,8 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 		global_visited_vertices += global_nq_size_;
 
 #if VERVOSE_MODE
-		tmp = MPI_Wtime();
+		//		tmp = MPI_Wtime();
+		tmp = wtime();
 		double cur_fold_time = tmp - prev_time;
 		fold_time += cur_fold_time; prev_time = tmp;
 		AsyncAlltoallManager* a2a_comm = forward_or_backward_ ? &td_comm_ : &bu_comm_;
@@ -2811,14 +2816,16 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 		fapp_stop("expand", 0, 0);
 #endif
 #if VERVOSE_MODE
-		tmp = MPI_Wtime();
+		//		tmp = MPI_Wtime();
+		tmp = wtime();
 		cur_expand_time = tmp - prev_time;
 		expand_time += cur_expand_time; prev_time = tmp;
 #endif
 	} // while(true) {
 	clear_nq_stack();
 #if VERVOSE_MODE
-	if(mpi.isMaster()) print_with_prefix("Time of BFS: %f ms", (MPI_Wtime() - start_time) * 1000.0);
+	//	if(mpi.isMaster()) print_with_prefix("Time of BFS: %f ms", (MPI_Wtime() - start_time) * 1000.0);
+	if(mpi.isMaster()) print_with_prefix("Time of BFS: %f ms", (wtime() - start_time) * 1000.0);
 	int64_t total_edge_relax = total_edge_top_down + total_edge_bottom_up;
 	int time_cnt = 2, cnt_cnt = 9;
 	double send_time[] = { fold_time, expand_time };

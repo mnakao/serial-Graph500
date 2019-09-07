@@ -17,6 +17,7 @@
 #define BENCHMARK_HELPER_HPP_
 
 #include "logfile.h"
+#include "timer.hpp"
 
 class ProgressReport
 {
@@ -90,11 +91,14 @@ private:
 		int* node_list = new int[mpi.size_2d];
 		bool complete = false;
 		int work_count = 0;
-		double print_time = MPI_Wtime();
+		//		double print_time = MPI_Wtime();
+		double print_time = wtime();
 		while(complete == false) {
 			usleep(50*1000); // sleep 50 ms
-			if(MPI_Wtime() - print_time >= 2.0) {
-				print_time = MPI_Wtime();
+			//			if(MPI_Wtime() - print_time >= 2.0) {
+			if(wtime() - print_time >= 2.0) {
+			  //				print_time = MPI_Wtime();
+			  print_time = wtime();
 				for(int i = 0; i < mpi.size_2d; ++i) {
 					tmp_progress[i] = g_progress_[i];
 					node_list[i] = i;
@@ -155,7 +159,8 @@ void generate_graph(EdgeList* edge_list, const GraphGenerator<typename EdgeList:
 	const int64_t num_global_edges = generator->num_global_edges();
 	const int64_t num_global_chunks = (num_global_edges + EdgeList::CHUNK_SIZE - 1) / EdgeList::CHUNK_SIZE;
 	const int64_t num_iterations = (num_global_chunks + mpi.size_2d - 1) / mpi.size_2d;
-	double logging_time = MPI_Wtime();
+	//	double logging_time = MPI_Wtime();
+	double logging_time = wtime();
 #if REPORT_GEN_RPGRESS
 	ProgressReport* report = new ProgressReport(num_iterations);
 #endif
@@ -189,8 +194,10 @@ void generate_graph(EdgeList* edge_list, const GraphGenerator<typename EdgeList:
 			edge_list->write(edge_buffer, end_edge - start_edge);
 
 			if(mpi.isMaster()) {
-				print_with_prefix("Time for iteration %"PRId64" is %f ", i, MPI_Wtime() - logging_time);
-				logging_time = MPI_Wtime();
+			  //				print_with_prefix("Time for iteration %"PRId64" is %f ", i, MPI_Wtime() - logging_time);
+			  //				logging_time = MPI_Wtime();
+			   print_with_prefix("Time for iteration %"PRId64" is %f ", i, wtime() - logging_time);
+			   logging_time = wtime();
 			}
 #if REPORT_GEN_RPGRESS
 			report->advace();
