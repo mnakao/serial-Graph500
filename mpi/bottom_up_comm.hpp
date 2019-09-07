@@ -189,7 +189,7 @@ public:
 	template <typename T>
 	void begin(T** recv_buffers__, int buffer_count__, int buffer_width__) {
 		super__::begin(recv_buffers__, buffer_count__, buffer_width__);
-		type = MpiTypeOf<T>::type;
+		//		type = MpiTypeOf<T>::type;
 		recv_top = 0;
 		is_active = false;
 	}
@@ -204,7 +204,7 @@ protected:
 	};
 
 	CommTarget nodes_[2];
-        MPI_Datatype type;
+  //        MPI_Datatype type;
   //	MPI_Request req[4];
 	int recv_top;
 	bool is_active;
@@ -275,8 +275,8 @@ protected:
 		//		MPI_Isend(send_pair[1].data, send_pair[1].tag.length,
 		//				type, nodes_[0].rank, make_tag(send_pair[1].tag), mpi_comm, &req[3]);
 
-  	        memcpy(recv_pair[recv_0].data, send_pair[0].data, sizeof(type)*buffer_width);
-	        memcpy(recv_pair[recv_1].data, send_pair[1].data, sizeof(type)*buffer_width);
+  	        memcpy(recv_pair[recv_0].data, send_pair[0].data, 8*buffer_width);
+	        memcpy(recv_pair[recv_1].data, send_pair[1].data, 8*buffer_width);
 
 		_length = buffer_width;
 		_tag[0] = make_tag(send_pair[0].tag);
