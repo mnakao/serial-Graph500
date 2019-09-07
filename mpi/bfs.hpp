@@ -2099,8 +2099,9 @@ public:
 			}
 		}
 		// scatter information within the processor row
-		MPI_Scatter(scatter_buffer, sizeof(recv_nq_size), MPI_BYTE,
-				&recv_nq_size, sizeof(recv_nq_size), MPI_BYTE, 0, mpi.comm_2dr);
+		//		MPI_Scatter(scatter_buffer, sizeof(recv_nq_size), MPI_BYTE,
+		//				&recv_nq_size, sizeof(recv_nq_size), MPI_BYTE, 0, mpi.comm_2dr);
+		memcpy(&recv_nq_size, scatter_buffer, sizeof(recv_nq_size));
 		nq_size_ = recv_nq_size.nq_size;
 		max_nq_size_ = recv_nq_size.max_nq_size;
 		global_nq_size_ = recv_nq_size.global_nq_size;
