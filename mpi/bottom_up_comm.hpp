@@ -208,6 +208,7 @@ protected:
 	MPI_Request req[4];
 	int recv_top;
 	bool is_active;
+        int _length, _tag[2];
 
 	virtual CommTargetBase& nodes(int target) { return nodes_[target]; }
 
@@ -217,11 +218,11 @@ protected:
 				(tag.routed_count << 12) | tag.region_id;
 	}
 
-	BottomUpSubstepTag make_tag(MPI_Status& status) {
+        BottomUpSubstepTag make_tag(int length, int raw_tag) {
 		BottomUpSubstepTag tag;
-		int length;
-		int raw_tag = status.MPI_TAG;
-		MPI_Get_count(&status, type, &length);
+		// int length;
+		// int raw_tag = status.MPI_TAG;
+		// MPI_Get_count(&status, type, &length);
 		tag.length = length;
 		tag.region_id = raw_tag & 0xFFF;
 		tag.routed_count = (raw_tag >> 12) & 0xFFF;
@@ -231,21 +232,21 @@ protected:
 
 	void next_recv_probe(bool blocking) {
 		if(is_active) {
-			MPI_Status status[4];
-			if(blocking) {
-				MPI_Waitall(4, req, status);
-			}
-			else {
-				int flag;
-				MPI_Testall(4, req, &flag, status);
-				if(flag == false) {
-					return ;
-				}
-			}
+		  //	MPI_Status status[4];
+		  //    if(blocking) {
+		  //      MPI_Waitall(4, req, status);
+		  //    }
+		  //    else {
+		  //      int flag;
+		  //      MPI_Testall(4, req, &flag, status);
+		  //      if(flag == false) {
+		  //        return ;
+		  //      }
+		  //	}
 			int recv_0 = recv_filled++ % NBUF;
 			int recv_1 = recv_filled++ % NBUF;
-			recv_pair[recv_0].tag = make_tag(status[0]);
-			recv_pair[recv_1].tag = make_tag(status[1]);
+			recv_pair[recv_0].tag = make_tag(_length, _tag[0]);
+			recv_pair[recv_1].tag = make_tag(_length, _tag[1]);
 			free_buffer(send_pair[2].data);
 			free_buffer(send_pair[3].data);
 			is_active = false;
@@ -264,15 +265,22 @@ protected:
 		int recv_1 = recv_top++ % NBUF;
 		recv_pair[recv_0].data = get_buffer();
 		recv_pair[recv_1].data = get_buffer();
-		MPI_Irecv(recv_pair[recv_0].data, buffer_width,
-				type, nodes_[0].rank, MPI_ANY_TAG, mpi_comm, &req[0]);
-		MPI_Irecv(recv_pair[recv_1].data, buffer_width,
-				type, nodes_[1].rank, MPI_ANY_TAG, mpi_comm, &req[1]);
+		//		MPI_Irecv(recv_pair[recv_0].data, buffer_width,
+		//				type, nodes_[0].rank, MPI_ANY_TAG, mpi_comm, &req[0]);
+		//		MPI_Irecv(recv_pair[recv_1].data, buffer_width,
+		//				type, nodes_[1].rank, MPI_ANY_TAG, mpi_comm, &req[1]);
 		//print_with_prefix("bottom_up_comm.hpp : send_recv()");
-		MPI_Isend(send_pair[0].data, send_pair[0].tag.length,
-				type, nodes_[1].rank, make_tag(send_pair[0].tag), mpi_comm, &req[2]);
-		MPI_Isend(send_pair[1].data, send_pair[1].tag.length,
-				type, nodes_[0].rank, make_tag(send_pair[1].tag), mpi_comm, &req[3]);
+		//		MPI_Isend(send_pair[0].data, send_pair[0].tag.length,
+		//				type, nodes_[1].rank, make_tag(send_pair[0].tag), mpi_comm, &req[2]);
+		//		MPI_Isend(send_pair[1].data, send_pair[1].tag.length,
+		//				type, nodes_[0].rank, make_tag(send_pair[1].tag), mpi_comm, &req[3]);
+
+  	        memcpy(recv_pair[recv_0].data, send_pair[0].data, sizeof(type)*buffer_width);
+	        memcpy(recv_pair[recv_1].data, send_pair[1].data, sizeof(type)*buffer_width);
+
+		_length = buffer_width;
+		_tag[0] = make_tag(send_pair[0].tag);
+		_tag[1]	= make_tag(send_pair[1].tag);
 
 		send_pair[2] = send_pair[0];
 		send_pair[3] = send_pair[1];
