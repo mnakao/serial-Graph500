@@ -1396,7 +1396,7 @@ public:
 			for(int i = 0; i < count_length; ++i) {
 				total_nq += phase_recv[i];
 			}
-			print_with_prefix("Bottom-Up: %"PRId64" vertexes found. Break down ...", total_nq);
+			print_with_prefix("Bottom-Up: %" PRId64 " vertexes found. Break down ...", total_nq);
 			for(int i = 0; i < count_length; ++i) {
 				print_with_prefix("step %d / %d  %f M Vertexes ( %f %% )",
 						i+1, count_length, to_mega(phase_recv[i]), (double)phase_recv[i] / (double)total_nq * 100.0);
@@ -2758,13 +2758,13 @@ void BfsBase::run_bfs(int64_t root, int64_t* pred)
 			print_with_prefix("Fold Time: %f ms", cur_fold_time * 1000.0);
 			print_with_prefix("Level Total Time: %f ms", time_of_level * 1000.0);
 
-			print_with_prefix("NQ %"PRId64", 1/ %f, %f %% of global, 1/ %f, %f %% of Unvisited",
+			print_with_prefix("NQ %" PRId64 ", 1/ %f, %f %% of global, 1/ %f, %f %% of Unvisited",
 						global_nq_size_, 1/nq_rate, nq_rate*100, 1/nq_unvis_rate, nq_unvis_rate*100);
-			print_with_prefix("Unvisited %"PRId64", 1/ %f, %f %% of global",
+			print_with_prefix("Unvisited %" PRId64 ", 1/ %f, %f %% of global",
 					global_unvisited_vertices, 1/unvis_rate, unvis_rate*100);
 
 			int64_t edge_relaxed = forward_or_backward_ ? num_edge_top_down_ : num_edge_bottom_up_;
-			print_with_prefix("Edge relax: %"PRId64", %f %%, %f M/s (Level), %f M/s (Fold)",
+			print_with_prefix("Edge relax: %" PRId64 ", %f %%, %f M/s (Level), %f M/s (Fold)",
 					edge_relaxed, (double)edge_relaxed / graph_.num_global_edges_ * 100.0,
 					to_mega(edge_relaxed) / time_of_level,
 					to_mega(edge_relaxed) / cur_fold_time);
