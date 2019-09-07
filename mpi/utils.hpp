@@ -1558,7 +1558,7 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 	mpi.rank_z = 0;
 
 	// change default error handler
-	MPI_File_set_errhandler(MPI_FILE_NULL, MPI_ERRORS_ARE_FATAL);
+	//	MPI_File_set_errhandler(MPI_FILE_NULL, MPI_ERRORS_ARE_FATAL);
 
 #ifdef _OPENMP
 	if(mpi.isRmaster()){
