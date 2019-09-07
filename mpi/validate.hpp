@@ -39,7 +39,8 @@ struct gather {
   MPI_Comm comm;
   size_t* local_indices;
   int* remote_ranks;
-  MPI_Aint* remote_indices;
+  //  MPI_Aint* remote_indices;
+  long *remote_indices;
   int comm_size;
   int* send_counts;
   int* send_offsets;
@@ -60,7 +61,8 @@ gather* init_gather(void* input, size_t input_count, size_t elt_size, void* outp
   MPI_Comm_dup(mpi.comm_2d, &g->comm);
   g->local_indices = (size_t*)page_aligned_xmalloc(nrequests_max * sizeof(size_t));
   g->remote_ranks = (int*)page_aligned_xmalloc(nrequests_max * sizeof(int));
-  g->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  //  g->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  g->remote_indices = (long*)page_aligned_xmalloc(nrequests_max * sizeof(long));
   //  MPI_Comm_size(g->comm, &g->comm_size);
   g->comm_size = 1;
   int size = g->comm_size;
@@ -107,7 +109,8 @@ void add_gather_request(gather* g, size_t local_idx, int remote_rank, size_t rem
   g->local_indices[req_id] = local_idx;
   assert (g->remote_ranks[req_id] == g->comm_size);
   g->remote_ranks[req_id] = remote_rank;
-  g->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  //  g->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  g->remote_indices[req_id] = (long)remote_idx;
 }
 
 /* Adapted from histogram_sort_inplace in boost/graph/detail/histogram_sort.hpp
@@ -117,7 +120,8 @@ void histogram_sort_size_tMPI_Aint
         const int* restrict rowstart,
         int numkeys,
         size_t* restrict values1,
-        MPI_Aint* restrict values2) {
+	//        MPI_Aint* restrict values2) {
+	long* restrict values2) {
   int* restrict insert_positions = (int*)cache_aligned_xmalloc(numkeys * sizeof(int));
   memcpy(insert_positions, rowstart, numkeys * sizeof(int));
   int i;
@@ -133,7 +137,8 @@ void histogram_sort_size_tMPI_Aint
       // print_with_prefix("swapping [%d] = (%d, %d, %d) with [%d] = (%d, %d, %d)", i, keys[i], (int)values1[i], (int)values2[i], target_pos, keys[target_pos], (int)values1[target_pos], (int)values2[target_pos]);
       {int t = keys[i]; key = keys[target_pos]; keys[i] = key; keys[target_pos] = t;}
       {size_t t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
-      {MPI_Aint t = values2[i]; values2[i] = values2[target_pos]; values2[target_pos] = t;}
+      //      {MPI_Aint t = values2[i]; values2[i] = values2[target_pos]; values2[target_pos] = t;}
+      {long t = values2[i]; values2[i] = values2[target_pos]; values2[target_pos] = t;}
       assert (key >= 0 && key < numkeys);
     }
     // print_with_prefix("done");
@@ -153,7 +158,8 @@ void end_gather(gather* g) {
   int* restrict recv_offsets = g->recv_offsets;
   size_t* restrict local_indices = g->local_indices;
   int* restrict remote_ranks = g->remote_ranks;
-  MPI_Aint* restrict remote_indices = g->remote_indices;
+  //  MPI_Aint* restrict remote_indices = g->remote_indices;
+  long* restrict remote_indices = g->remote_indices;
   const char* restrict input = (const char*)g->input;
   char* restrict output = (char*)g->output;
   size_t elt_size = g->elt_size;
@@ -185,14 +191,16 @@ void end_gather(gather* g) {
     assert (recv_counts[i] >= 0);
     recv_offsets[i + 1] = recv_offsets[i] + recv_counts[i];
   }
-  MPI_Aint* restrict recv_data = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  //  MPI_Aint* restrict recv_data = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  long* restrict recv_data = (long*)page_aligned_xmalloc(recv_offsets[size] * sizeof(long));
   //  MPI_Alltoallv(remote_indices, send_counts, send_offsets, MPI_AINT, recv_data, recv_counts, recv_offsets, MPI_AINT, comm);
   for(int i=0;i<recv_counts[0];i++)
     recv_data[i] = remote_indices[i];  // send_offsets[0] = recv_offsets[0] = 0;
   
   char* restrict reply_data = (char*)page_aligned_xmalloc(recv_offsets[size] * elt_size);
   for (i = 0; i < (size_t)recv_offsets[size]; ++i) {
-    assert (recv_data[i] >= 0 && recv_data[i] < (MPI_Aint)input_count);
+    //    assert (recv_data[i] >= 0 && recv_data[i] < (MPI_Aint)input_count);
+    assert (recv_data[i] >= 0 && recv_data[i] < (long)input_count);
     memcpy(reply_data + i * elt_size, input + recv_data[i] * elt_size, elt_size);
   }
   free(recv_data);
@@ -223,7 +231,8 @@ struct scatter_constant {
   int valid;
   MPI_Comm comm;
   int* remote_ranks;
-  MPI_Aint* remote_indices;
+  //  MPI_Aint* remote_indices;
+  long* remote_indices;
   int comm_size;
   int* send_counts;
   int* send_offsets;
@@ -242,7 +251,8 @@ scatter_constant* init_scatter_constant(void* array, size_t array_count, size_t 
   sc->valid = 0;
   MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
-  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  //  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  sc->remote_indices = (long*)page_aligned_xmalloc(nrequests_max * sizeof(long));
   //  MPI_Comm_size(sc->comm, &sc->comm_size);
   sc->comm_size = 1;
   int size = sc->comm_size;
@@ -277,7 +287,8 @@ void add_scatter_constant_request(scatter_constant* sc, int remote_rank, size_t 
   assert (req_id < sc->nrequests_max);
   assert (sc->remote_ranks[req_id] == sc->comm_size);
   sc->remote_ranks[req_id] = remote_rank;
-  sc->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  //  sc->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  sc->remote_indices[req_id] = (long)remote_idx;
 }
 
 /* Adapted from histogram_sort_inplace in boost/graph/detail/histogram_sort.hpp
@@ -286,7 +297,8 @@ void histogram_sort_MPI_Aint
        (int* restrict keys,
         const int* restrict rowstart,
         int numkeys,
-        MPI_Aint* restrict values1) {
+	//        MPI_Aint* restrict values1) {
+	long* restrict values1) {
   int* restrict insert_positions = (int*)cache_aligned_xmalloc(numkeys * sizeof(int));
   memcpy(insert_positions, rowstart, numkeys * sizeof(int));
   int i;
@@ -298,7 +310,8 @@ void histogram_sort_MPI_Aint
       if (target_pos == i) continue;
       assert (target_pos < rowstart[key + 1]);
       {int t = keys[i]; key = keys[target_pos]; keys[i] = key; keys[target_pos] = t;}
-      {MPI_Aint t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
+      //      {MPI_Aint t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
+      {long t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
       assert (key >= 0 && key < numkeys);
     }
   }
@@ -316,7 +329,8 @@ void end_scatter_constant(scatter_constant* sc) {
   int* restrict recv_counts = sc->recv_counts;
   int* restrict recv_offsets = sc->recv_offsets;
   int* restrict remote_ranks = sc->remote_ranks;
-  MPI_Aint* restrict remote_indices = sc->remote_indices;
+  //  MPI_Aint* restrict remote_indices = sc->remote_indices;
+  long* restrict remote_indices = sc->remote_indices;
   char* restrict array = (char*)sc->array;
   const char* restrict constant = (const char*)sc->constant;
   size_t elt_size = sc->elt_size;
@@ -343,13 +357,15 @@ void end_scatter_constant(scatter_constant* sc) {
   for (i = 0; i < (size_t)size; ++i) {
     recv_offsets[i + 1] = recv_offsets[i] + recv_counts[i];
   }
-  MPI_Aint* restrict recv_data = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  //  MPI_Aint* restrict recv_data = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  long* restrict recv_data = (long*)page_aligned_xmalloc(recv_offsets[size] * sizeof(long));
   //  MPI_Alltoallv(remote_indices, send_counts, send_offsets, MPI_AINT, recv_data, recv_counts, recv_offsets, MPI_AINT, comm);
   for(int i=0;i<recv_counts[0];i++)
     recv_data[i] = remote_indices[i];  // send_offsets[0] = recv_offsets[0] = 0;
   
   for (i = 0; i < (size_t)recv_offsets[size]; ++i) {
-    assert (recv_data[i] >= 0 && recv_data[i] < (MPI_Aint)array_count);
+    //    assert (recv_data[i] >= 0 && recv_data[i] < (MPI_Aint)array_count);
+    assert (recv_data[i] >= 0 && recv_data[i] < (long)array_count);
     memcpy(array + recv_data[i] * elt_size, constant, elt_size);
   }
   free(recv_data);
@@ -366,7 +382,8 @@ struct scatter {
   int valid;
   MPI_Comm comm;
   int* remote_ranks;
-  MPI_Aint* remote_indices;
+  //  MPI_Aint* remote_indices;
+  long* remote_indices;
   int comm_size;
   int* send_counts;
   int* send_offsets;
@@ -385,7 +402,8 @@ scatter* init_scatter(void* array, size_t array_count, size_t elt_size, size_t n
   sc->valid = 0;
   MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
-  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  //  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
+  sc->remote_indices = (long*)page_aligned_xmalloc(nrequests_max * sizeof(long));
   //  MPI_Comm_size(sc->comm, &sc->comm_size);
   sc->comm_size = 1;
   int size = sc->comm_size;
@@ -422,7 +440,8 @@ void add_scatter_request(scatter* sc, const char* local_data, int remote_rank, s
   memcpy(sc->send_data + req_id * sc->elt_size, local_data, sc->elt_size);
   assert (sc->remote_ranks[req_id] == sc->comm_size);
   sc->remote_ranks[req_id] = remote_rank;
-  sc->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  //  sc->remote_indices[req_id] = (MPI_Aint)remote_idx;
+  sc->remote_indices[req_id] = (long)remote_idx;
 }
 
 /* Adapted from histogram_sort_inplace in boost/graph/detail/histogram_sort.hpp
@@ -431,7 +450,8 @@ void histogram_sort_MPI_Aintcharblock
        (int* restrict keys,
         const int* restrict rowstart,
         int numkeys,
-        MPI_Aint* restrict values1,
+	//        MPI_Aint* restrict values1,
+	long* restrict values1,
         char* restrict values2,
         size_t elt_size2) {
   int* restrict insert_positions = (int*)cache_aligned_xmalloc(numkeys * sizeof(int));
@@ -447,7 +467,8 @@ void histogram_sort_MPI_Aintcharblock
       if (target_pos == i) continue;
       assert (target_pos < rowstart[key + 1]);
       {int t = keys[i]; key = keys[target_pos]; keys[i] = key; keys[target_pos] = t;}
-      {MPI_Aint t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
+      //      {MPI_Aint t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
+      {long t = values1[i]; values1[i] = values1[target_pos]; values1[target_pos] = t;}
       {char t[elt_size2]; memcpy(t, values2 + i * elt_size2, elt_size2); memcpy(values2 + i * elt_size2, values2 + target_pos * elt_size2, elt_size2); memcpy(values2 + target_pos * elt_size2, t, elt_size2);}
       assert (key >= 0 && key < numkeys);
     }
@@ -468,7 +489,8 @@ void end_scatter(scatter* sc) {
   int* restrict recv_offsets = sc->recv_offsets;
   char* restrict send_data = sc->send_data;
   int* restrict remote_ranks = sc->remote_ranks;
-  MPI_Aint* restrict remote_indices = sc->remote_indices;
+  //  MPI_Aint* restrict remote_indices = sc->remote_indices;
+  long* restrict remote_indices = sc->remote_indices;
   char* restrict array = (char*)sc->array;
   size_t elt_size = sc->elt_size;
   //  MPI_Comm comm = sc->comm;
@@ -494,7 +516,8 @@ void end_scatter(scatter* sc) {
   for (i = 0; i < (size_t)size; ++i) {
     recv_offsets[i + 1] = recv_offsets[i] + recv_counts[i];
   }
-  MPI_Aint* restrict recv_indices = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  //  MPI_Aint* restrict recv_indices = (MPI_Aint*)page_aligned_xmalloc(recv_offsets[size] * sizeof(MPI_Aint));
+  long* restrict recv_indices = (long*)page_aligned_xmalloc(recv_offsets[size] * sizeof(long));
   char* restrict recv_data = (char*)cache_aligned_xmalloc(recv_offsets[size] * elt_size);
   //  MPI_Alltoallv(remote_indices, send_counts, send_offsets, MPI_AINT, recv_indices, recv_counts, recv_offsets, MPI_AINT, comm);
   for(int i=0;i<recv_counts[0];i++)
@@ -505,7 +528,8 @@ void end_scatter(scatter* sc) {
     recv_data[i] = send_data[i];    // send_offsets[0] = recv_offsets[0] = 0;
   
   for (i = 0; i < (size_t)recv_offsets[size]; ++i) {
-    assert (recv_indices[i] >= 0 && recv_indices[i] < (MPI_Aint)array_count);
+    //    assert (recv_indices[i] >= 0 && recv_indices[i] < (MPI_Aint)array_count);
+    assert (recv_indices[i] >= 0 && recv_indices[i] < (long)array_count);
     memcpy(array + recv_indices[i] * elt_size, recv_data + i * elt_size, elt_size);
   }
   free(recv_data);
@@ -718,8 +742,10 @@ bool validate(EdgeList* edge_list, const int64_t root, int64_t* const pred, int6
 		scatter_r.free(recv_pred_c); recv_pred_c = NULL;
 
 		//begin_scatter_constant(pred_valid_win);
-		MPI_Aint* restrict remote_valid_indices_r = (MPI_Aint*)page_aligned_xmalloc(chunksize_ * sizeof(MPI_Aint));
-		MPI_Aint* restrict remote_valid_indices_c = (MPI_Aint*)page_aligned_xmalloc(chunksize_ * sizeof(MPI_Aint));
+		//		MPI_Aint* restrict remote_valid_indices_r = (MPI_Aint*)page_aligned_xmalloc(chunksize_ * sizeof(MPI_Aint));
+		//		MPI_Aint* restrict remote_valid_indices_c = (MPI_Aint*)page_aligned_xmalloc(chunksize_ * sizeof(MPI_Aint));
+		long* restrict remote_valid_indices_r = (long*)page_aligned_xmalloc(chunksize_ * sizeof(long));
+		long* restrict remote_valid_indices_c = (long*)page_aligned_xmalloc(chunksize_ * sizeof(long));
 
 #pragma omp parallel
 		{
@@ -779,9 +805,11 @@ bool validate(EdgeList* edge_list, const int64_t root, int64_t* const pred, int6
 			} // #pragma omp for schedule(static)
 		} // #pragma omp parallel
 
-		MPI_Aint* restrict recv_valid_indices_r = scatter_r.scatter(remote_valid_indices_r);
+		//		MPI_Aint* restrict recv_valid_indices_r = scatter_r.scatter(remote_valid_indices_r);
+		long* restrict recv_valid_indices_r = scatter_r.scatter(remote_valid_indices_r);
 		recv_count_r = scatter_r.get_recv_count();
-		MPI_Aint* restrict recv_valid_indices_c = scatter_c.scatter(remote_valid_indices_c);
+		//		MPI_Aint* restrict recv_valid_indices_c = scatter_c.scatter(remote_valid_indices_c);
+		long* restrict recv_valid_indices_c = scatter_c.scatter(remote_valid_indices_c);
 		recv_count_c = scatter_c.get_recv_count();
 		free(remote_valid_indices_r); remote_valid_indices_r = NULL;
 		free(remote_valid_indices_c); remote_valid_indices_c = NULL;

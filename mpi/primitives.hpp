@@ -31,9 +31,12 @@ struct UnweightedEdge {
 	static void initialize()
 	{
 		int block_length[] = {1, 1};
-		MPI_Aint displs[] = {
-				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedEdge*>(NULL)->v0_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedEdge*>(NULL)->v1_)) };
+		//		MPI_Aint displs[] = {
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedEdge*>(NULL)->v0_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedEdge*>(NULL)->v1_)) };
+		long displs[] = {
+		  reinterpret_cast<long>(&(static_cast<UnweightedEdge*>(NULL)->v0_)),
+		  reinterpret_cast<long>(&(static_cast<UnweightedEdge*>(NULL)->v1_)) };
 		MPI_Type_create_hindexed(2, block_length, displs, MPI_INT64_T, &MpiTypeOf<UnweightedEdge>::type);
 		MPI_Type_commit(&MpiTypeOf<UnweightedEdge>::type);
 	}
@@ -66,10 +69,14 @@ struct UnweightedPackedEdge {
 	static void initialize()
 	{
 		int block_length[] = {1, 1, 1};
-		MPI_Aint displs[] = {
-				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->v0_low_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->v1_low_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->high_)) };
+		//		MPI_Aint displs[] = {
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->v0_low_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->v1_low_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<UnweightedPackedEdge*>(NULL)->high_)) };
+		long displs[] = {
+		  reinterpret_cast<long>(&(static_cast<UnweightedPackedEdge*>(NULL)->v0_low_)),
+		  reinterpret_cast<long>(&(static_cast<UnweightedPackedEdge*>(NULL)->v1_low_)),
+		  reinterpret_cast<long>(&(static_cast<UnweightedPackedEdge*>(NULL)->high_)) };
 		MPI_Type_create_hindexed(3, block_length, displs, MPI_UINT32_T, &MpiTypeOf<UnweightedPackedEdge>::type);
 		MPI_Type_commit(&MpiTypeOf<UnweightedPackedEdge>::type);
 	}
@@ -108,11 +115,16 @@ struct WeightedEdge {
 	static void initialize()
 	{
 		int block_length[] = {1, 1, 1, 1};
-		MPI_Aint displs[] = {
-				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->v0_low_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->v1_low_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->high_)),
-				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->weight_)) };
+		//		MPI_Aint displs[] = {
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->v0_low_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->v1_low_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->high_)),
+		//				reinterpret_cast<MPI_Aint>(&(static_cast<WeightedEdge*>(NULL)->weight_)) };
+		long displs[] = {
+		  reinterpret_cast<long>(&(static_cast<WeightedEdge*>(NULL)->v0_low_)),
+		  reinterpret_cast<long>(&(static_cast<WeightedEdge*>(NULL)->v1_low_)),
+		  reinterpret_cast<long>(&(static_cast<WeightedEdge*>(NULL)->high_)),
+		  reinterpret_cast<long>(&(static_cast<WeightedEdge*>(NULL)->weight_)) };
 		MPI_Datatype types[] = {MPI_UINT32_T, MPI_UINT32_T, MPI_UINT32_T, MPI_INT};
 		MPI_Type_create_struct(4, block_length, displs, types, &MpiTypeOf<WeightedEdge>::type);
 		MPI_Type_commit(&MpiTypeOf<WeightedEdge>::type);

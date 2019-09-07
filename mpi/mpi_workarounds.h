@@ -27,7 +27,7 @@
 #define MPI_UINT64_T FIND_MPI_UINT_TYPE(uint64_t)
 #define MPI_UINT32_T FIND_MPI_UINT_TYPE(uint32_t)
 #define MPI_UINT16_T FIND_MPI_UINT_TYPE(uint16_t)
-#define MPI_AINT FIND_MPI_UINT_TYPE(MPI_Aint)
+//#define MPI_AINT FIND_MPI_UINT_TYPE(MPI_Aint)
 #endif
 
 /* If you have problems with one-sided operations (such as crashes in the
