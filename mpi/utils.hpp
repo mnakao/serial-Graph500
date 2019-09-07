@@ -319,11 +319,12 @@ void print_max_memory_usage() {
 }
 ////
 
-void* xMPI_Alloc_mem(size_t nbytes) {
-  void* p = NULL;
-  MPI_Alloc_mem(nbytes, MPI_INFO_NULL, &p);
+void* xMPI_Alloc_mem(size_t nbytes) {  // 
+  void* p = malloc(nbytes);
+  //  MPI_Alloc_mem(nbytes, MPI_INFO_NULL, &p);
+
   if (nbytes != 0 && !p) {
-	  throw_exception("MPI_Alloc_mem failed for size%zu (%" PRId64 ") byte(s)", nbytes, (int64_t)nbytes);
+    throw_exception("MPI_Alloc_mem failed for size%zu (%" PRId64 ") byte(s)", nbytes, (int64_t)nbytes);  //
   }
 #if VERVOSE_MODE
   if(mpi.isMaster() && nbytes > 1024*1024) {
@@ -1681,7 +1682,7 @@ T* alltoallv(T* sendbuf, int* sendcount,
 	for(int r = 0; r < comm_size; ++r) {
 		recvoffset[r + 1] = recvoffset[r] + recvcount[r];
 	}
-	T* recv_data = static_cast<T*>(xMPI_Alloc_mem(recvoffset[comm_size] * sizeof(T)));
+	T* recv_data = static_cast<T*>(xMPI_Alloc_mem(recvoffset[comm_size] * sizeof(T)));  // 
 	//	MPI_Alltoallv(sendbuf, sendcount, sendoffset, MpiTypeOf<T>::type,
 	//			recv_data, recvcount, recvoffset, MpiTypeOf<T>::type, comm);
 	for(int i=0;i<recvcount[0];i++)
@@ -1975,7 +1976,7 @@ public:
 
 	template <typename T>
 	T* gather(T* send_data) {
-		T* recv_data = static_cast<T*>(xMPI_Alloc_mem(send_offsets_[comm_size_] * sizeof(T)));
+	  T* recv_data = static_cast<T*>(xMPI_Alloc_mem(send_offsets_[comm_size_] * sizeof(T))); //
 		//		MPI_Alltoallv(send_data, recv_counts_, recv_offsets_, MpiTypeOf<T>::type,
 		//				recv_data, send_counts_, send_offsets_, MpiTypeOf<T>::type, comm_);
 		for(int i=0;i<send_counts_[0];i++)
@@ -1986,7 +1987,9 @@ public:
 
 	template <typename T>
 	void free(T* buffer) {
-		MPI_Free_mem(buffer);
+	  //	  printf("%p\n", buffer);
+	  //free(buffer);
+	  MPI_Free_mem(buffer);
 	}
 
 	void alltoallv(void* sendbuf, void* recvbuf, MPI_Datatype type, int recvbufsize)

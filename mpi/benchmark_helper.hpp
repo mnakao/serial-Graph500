@@ -245,8 +245,7 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::has
 	TRACER(redistribution);
 	typedef typename EdgeList::edge_type EdgeType;
 	ScatterContext scatter(mpi.comm_2d);
-	EdgeType* edges_to_send = static_cast<EdgeType*>(
-			xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType)));
+	EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType)));  // 
 	int num_loops = edge_list->beginRead(true);
 	edge_list->beginWrite();
 
@@ -296,7 +295,8 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::has
 	if(mpi.isMaster()) print_with_prefix("Finished.");
 	edge_list->endWrite();
 	edge_list->endRead();
-	MPI_Free_mem(edges_to_send);
+	//	MPI_Free_mem(edges_to_send);
+	free(edges_to_send);
 }
 
 // function #2
@@ -305,8 +305,7 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::no_
 {
 	typedef typename EdgeList::edge_type EdgeType;
 	ScatterContext scatter(mpi.comm_2d);
-	EdgeType* edges_to_send = static_cast<EdgeType*>(
-			xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType)));
+	EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType))); //
 	int num_loops = edge_list->beginRead(true);
 	edge_list->beginWrite();
 
@@ -359,7 +358,8 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::no_
 	}
 	edge_list->endWrite();
 	edge_list->endRead();
-	MPI_Free_mem(edges_to_send);
+	// MPI_Free_mem(edges_to_send);
+	free(edges_to_send);
 }
 
 template <typename GraphType>

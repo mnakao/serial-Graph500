@@ -54,7 +54,8 @@ public:
 		free(row_sums_); row_sums_ = NULL;
 		free(reorder_map_); reorder_map_ = NULL;
 		free(invert_map_); invert_map_ = NULL;
-		MPI_Free_mem(orig_vertexes_); orig_vertexes_ = NULL;
+		//		MPI_Free_mem(orig_vertexes_); orig_vertexes_ = NULL;
+		free(orig_vertexes_); orig_vertexes_ = NULL;
 		free(has_edge_bitmap_); has_edge_bitmap_ = NULL;
 		free(edge_array_); edge_array_ = NULL;
 		free(row_starts_); row_starts_ = NULL;
@@ -729,8 +730,7 @@ private:
 	void scatterAndScanEdges(EdgeList* edge_list, GraphType& g) {
 		TRACER(scan_edge);
 		ScatterContext scatter(mpi.comm_2d);
-		int64_t* edges_to_send = static_cast<int64_t*>(
-				xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(int64_t)));
+		int64_t* edges_to_send = static_cast<int64_t*>(xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(int64_t))); // 
 		int num_loops = edge_list->beginRead(false);
 
 		if(mpi.isMaster()) print_with_prefix("Begin counting degree. Number of iterations is %d.", num_loops);
@@ -801,7 +801,8 @@ private:
 			if(mpi.isMaster()) print_with_prefix("Iteration %d finished.", loop_count);
 		}
 		edge_list->endRead();
-		MPI_Free_mem(edges_to_send);
+		// MPI_Free_mem(edges_to_send);
+		free(edges_to_send);
 
 		if(mpi.isMaster()) print_with_prefix("Finished scattering edges.");
 	}
@@ -1147,8 +1148,7 @@ private:
 	void scatterAndStore(EdgeList* edge_list, GraphType& g) {
 		TRACER(store_edge);
 		ScatterContext scatter(mpi.comm_2d);
-		EdgeType* edges_to_send = static_cast<EdgeType*>(
-				xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(EdgeType)));
+		EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(EdgeType))); //
 
 		//const int64_t num_local_verts = g.num_local_verts_;
 		g.edge_array_ = (int64_t*)cache_aligned_xcalloc(wide_row_starts_[num_wide_rows_]*sizeof(int64_t));
@@ -1226,8 +1226,9 @@ private:
 		}
 
 		edge_list->endRead();
-		MPI_Free_mem(edges_to_send);
-
+		// MPI_Free_mem(edges_to_send);
+		free(edges_to_send);
+		
 		if(mpi.isMaster()) print_with_prefix("Refreshing edge offset.");
 		memmove(wide_row_starts_+1, wide_row_starts_, num_wide_rows_*sizeof(wide_row_starts_[0]));
 		wide_row_starts_[0] = 0;

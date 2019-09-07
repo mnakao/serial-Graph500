@@ -264,7 +264,7 @@ static __thread uint this_is_not_used_ = 0;
 // Memory Allocation
 //-------------------------------------------------------------//
 
-void* xMPI_Alloc_mem(size_t nbytes);
+void* xMPI_Alloc_mem(size_t nbytes); //
 void* cache_aligned_xcalloc(const size_t size);
 void* cache_aligned_xmalloc(const size_t size);
 void* page_aligned_xcalloc(const size_t size);

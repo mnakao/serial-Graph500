@@ -823,8 +823,10 @@ bool validate(EdgeList* edge_list, const int64_t root, int64_t* const pred, int6
 			pred_valid[recv_valid_indices_c[i]] = 1;
 		}
 
-		MPI_Free_mem(recv_valid_indices_r);
-		MPI_Free_mem(recv_valid_indices_c);
+		//		MPI_Free_mem(recv_valid_indices_r);
+		//		MPI_Free_mem(recv_valid_indices_c);
+		free(recv_valid_indices_r);
+		free(recv_valid_indices_c);
 		free(edge_preds); edge_preds = NULL;
 		//end_scatter_constant(pred_valid_win);
 	}
@@ -911,7 +913,7 @@ int64_t build_bfs_depth_map(const int64_t root, int64_t* const pred)
     for (i = 0; i < (ptrdiff_t)nlocalverts; ++i) write_pred_entry_depth(&pred[i], UINT16_MAX);
     if (root_is_mine) write_pred_entry_depth(&pred[root_local], 0);
   }
-  int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */
+  int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */  // 
   gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts), MPI_INT64_T);
   int* restrict pred_owner = (int*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int));
   int64_t* restrict pred_local = (int64_t*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int64_t));
@@ -964,7 +966,8 @@ int64_t build_bfs_depth_map(const int64_t root, int64_t* const pred)
     }
   }
   destroy_gather(pred_win);
-  MPI_Free_mem(pred_pred);
+  //  MPI_Free_mem(pred_pred);
+  free(pred_pred);
   free(pred_owner);
   free(pred_local);
   return error_counts;
@@ -1001,7 +1004,7 @@ int64_t check_bfs_depth_map_using_predecessors(const int64_t root, const int64_t
       }
     }
   }
-  int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */
+  int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */  //
     gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts), MPI_INT64_T);
     int* restrict pred_owner = (int*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int));
     int64_t* restrict pred_local = (int64_t*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int64_t));
@@ -1043,7 +1046,8 @@ int64_t check_bfs_depth_map_using_predecessors(const int64_t root, const int64_t
       }
     }
     destroy_gather(pred_win);
-    MPI_Free_mem(pred_pred);
+    //MPI_Free_mem(pred_pred);
+    free(pred_pred);
     free(pred_owner);
     free(pred_local);
     return error_counts;
