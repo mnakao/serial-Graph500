@@ -400,7 +400,7 @@ private:
 class MpiCompletionHandler {
 public:
 	virtual ~MpiCompletionHandler() { }
-	virtual void complete(MPI_Status* status) = 0;
+  //	virtual void complete(MPI_Status* status) = 0;
 };
 
 class MpiRequestManager {
@@ -494,13 +494,13 @@ public:
 
 		next();
 	}
-
-	virtual void complete(MPI_Status* status) {
-		if(++complete_count == 4) {
-			next();
-		}
-	}
-
+  
+  //	virtual void complete(MPI_Status* status) {
+  //		if(++complete_count == 4) {
+  //			next();
+  //		}
+  //	}
+  
 private:
 	MpiRequestManager* req_man;
 
@@ -589,11 +589,11 @@ public:
 		next();
 	}
 
-	virtual void complete(MPI_Status* status) {
-		if(++complete_count == 2) {
-			next();
-		}
-	}
+  //	virtual void complete(MPI_Status* status) {
+  //		if(++complete_count == 2) {
+  //			next();
+  //		}
+  //	}
 
 private:
 	MpiRequestManager* req_man;
@@ -672,11 +672,11 @@ public:
 		next();
 	}
 
-	virtual void complete(MPI_Status* status) {
-		if(++complete_count == width*2) {
-			next();
-		}
-	}
+  //	virtual void complete(MPI_Status* status) {
+  //		if(++complete_count == width*2) {
+  //			next();
+  //		}
+  //	}
 
 private:
 	MpiRequestManager* req_man;
