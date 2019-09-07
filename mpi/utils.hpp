@@ -1693,11 +1693,13 @@ T* alltoallv(T* sendbuf, int* sendcount,
 template <typename T>
 void my_allgatherv(T *buffer, int* count, int* offset, MPI_Comm comm, int rank, int size, int left, int right)
 {
-	int l_sendidx = rank;
-	int l_recvidx = (rank + size + 1) % size;
-	int r_sendidx = rank;
-	int r_recvidx = (rank + size - 1) % size;
+  // This procedure may not be executed by mnakao.
+  //	int l_sendidx = rank;
+  //	int l_recvidx = (rank + size + 1) % size;
+  //	int r_sendidx = rank;
+  //	int r_recvidx = (rank + size - 1) % size;
 
+	/*
 	for(int i = 1; i < size; ++i, ++l_sendidx, ++l_recvidx, --r_sendidx, --r_recvidx) {
 		if(l_sendidx >= size) l_sendidx -= size;
 		if(l_recvidx >= size) l_recvidx -= size;
@@ -1714,13 +1716,14 @@ void my_allgatherv(T *buffer, int* count, int* offset, MPI_Comm comm, int rank, 
 		int r_recv_off = offset[r_recvidx] + count[r_recvidx] / 2;
 		int r_recv_cnt = count[r_recvidx] - count[r_recvidx] / 2;
 
-		MPI_Request req[4];
-		MPI_Irecv(&buffer[l_recv_off], l_recv_cnt, MpiTypeOf<T>::type, right, PRM::MY_EXPAND_TAG1, comm, &req[2]);
-		MPI_Irecv(&buffer[r_recv_off], r_recv_cnt, MpiTypeOf<T>::type, left, PRM::MY_EXPAND_TAG1, comm, &req[3]);
-		MPI_Isend(&buffer[l_send_off], l_send_cnt, MpiTypeOf<T>::type, left, PRM::MY_EXPAND_TAG1, comm, &req[0]);
-		MPI_Isend(&buffer[r_send_off], r_send_cnt, MpiTypeOf<T>::type, right, PRM::MY_EXPAND_TAG1, comm, &req[1]);
-		MPI_Waitall(4, req, MPI_STATUS_IGNORE);
+		//		MPI_Request req[4];
+		//		MPI_Irecv(&buffer[l_recv_off], l_recv_cnt, MpiTypeOf<T>::type, right, PRM::MY_EXPAND_TAG1, comm, &req[2]);
+		//		MPI_Irecv(&buffer[r_recv_off], r_recv_cnt, MpiTypeOf<T>::type, left, PRM::MY_EXPAND_TAG1, comm, &req[3]);
+		//		MPI_Isend(&buffer[l_send_off], l_send_cnt, MpiTypeOf<T>::type, left, PRM::MY_EXPAND_TAG1, comm, &req[0]);
+		//		MPI_Isend(&buffer[r_send_off], r_send_cnt, MpiTypeOf<T>::type, right, PRM::MY_EXPAND_TAG1, comm, &req[1]);
+		//		MPI_Waitall(4, req, MPI_STATUS_IGNORE);
 	}
+	*/
 }
 
 template <typename T>

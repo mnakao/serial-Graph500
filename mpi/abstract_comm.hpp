@@ -437,22 +437,23 @@ public:
 		finish_count += finish_count__;
 
 		while(finish_count > 0) {
-		  if((int)empty_list.size() == MAX_REQUESTS) {
-				fprintf(IMD_OUT, "Error: No active request\n");
-				throw "Error: No active request";
-			}
-			int index;
-			MPI_Status status;
-			MPI_Waitany(MAX_REQUESTS, reqs, &index, &status);
-			if(index == MPI_UNDEFINED) {
-				fprintf(IMD_OUT, "MPI_Waitany returns MPI_UNDEFINED ...\n");
-				throw "MPI_Waitany returns MPI_UNDEFINED ...";
-			}
-			MpiCompletionHandler* handler = handlers[index];
-			reqs[index] = MPI_REQUEST_NULL;
-			empty_list.push_back(index);
-
-			handler->complete(&status);
+		  // This procedure may not be executed by mnakao.
+		  //		  if((int)empty_list.size() == MAX_REQUESTS) {
+		  //		    fprintf(IMD_OUT, "Error: No active request\n");
+		  //		    throw "Error: No active request";
+		  //		  }
+		  //			int index;
+		  //			MPI_Status status;
+		  //			MPI_Waitany(MAX_REQUESTS, reqs, &index, &status);
+		  //			if(index == MPI_UNDEFINED) {
+		  //				fprintf(IMD_OUT, "MPI_Waitany returns MPI_UNDEFINED ...\n");
+		  //				throw "MPI_Waitany returns MPI_UNDEFINED ...";
+		  //			}
+		  //	MpiCompletionHandler* handler = handlers[index];
+		  //	reqs[index] = MPI_REQUEST_NULL;
+		  //	empty_list.push_back(index);
+		  //
+		  //	handler->complete(&status);
 		}
 	}
 
@@ -540,14 +541,15 @@ private:
 		int r_recv_off = offset[r_recvidx] + count[r_recvidx] / 2;
 		int r_recv_cnt = count[r_recvidx] - count[r_recvidx] / 2;
 
-		MPI_Irecv(&buffer[l_recv_off], l_recv_cnt, MpiTypeOf<T>::type,
-				right, tag, comm, req_man->submit_handler(this));
-		MPI_Irecv(&buffer[r_recv_off], r_recv_cnt, MpiTypeOf<T>::type,
-				left, tag, comm, req_man->submit_handler(this));
-		MPI_Isend(&buffer[l_send_off], l_send_cnt, MpiTypeOf<T>::type,
-				left, tag, comm, req_man->submit_handler(this));
-		MPI_Isend(&buffer[r_send_off], r_send_cnt, MpiTypeOf<T>::type,
-				right, tag, comm, req_man->submit_handler(this));
+		// This procedure may not be executed by mnakao.
+		//		MPI_Irecv(&buffer[l_recv_off], l_recv_cnt, MpiTypeOf<T>::type,
+		//				right, tag, comm, req_man->submit_handler(this));
+		//		MPI_Irecv(&buffer[r_recv_off], r_recv_cnt, MpiTypeOf<T>::type,
+		//				left, tag, comm, req_man->submit_handler(this));
+		//		MPI_Isend(&buffer[l_send_off], l_send_cnt, MpiTypeOf<T>::type,
+		//				left, tag, comm, req_man->submit_handler(this));
+		//		MPI_Isend(&buffer[r_send_off], r_send_cnt, MpiTypeOf<T>::type,
+		//				right, tag, comm, req_man->submit_handler(this));
 
 		++current;
 		++l_sendidx;
@@ -630,10 +632,11 @@ private:
 		int recv_off = offset[recvidx];
 		int recv_cnt = count[recvidx];
 
-		MPI_Irecv(&buffer[recv_off], recv_cnt, MpiTypeOf<T>::type,
-				recv_from, tag, comm.comm, req_man->submit_handler(this));
-		MPI_Isend(&buffer[send_off], send_cnt, MpiTypeOf<T>::type,
-				send_to, tag, comm.comm, req_man->submit_handler(this));
+		// This procedure may not be executed by mnakao.
+		//		MPI_Irecv(&buffer[recv_off], recv_cnt, MpiTypeOf<T>::type,
+		//				recv_from, tag, comm.comm, req_man->submit_handler(this));
+		//		MPI_Isend(&buffer[send_off], send_cnt, MpiTypeOf<T>::type,
+		//				send_to, tag, comm.comm, req_man->submit_handler(this));
 
 		++current;
 		complete_count = 0;
@@ -714,10 +717,12 @@ private:
 			int recv_off = offset[recvidx];
 			int recv_cnt = count[recvidx];
 
-			MPI_Irecv(&buffer[recv_off], recv_cnt, MpiTypeOf<T>::type,
-					recv_from, tag, comm.comm, req_man->submit_handler(this));
-			MPI_Isend(&buffer[send_off], send_cnt, MpiTypeOf<T>::type,
-					send_to, tag, comm.comm, req_man->submit_handler(this));
+
+			// This procedure may not be executed by mnakao.
+			// MPI_Irecv(&buffer[recv_off], recv_cnt, MpiTypeOf<T>::type,
+			//	     recv_from, tag, comm.comm, req_man->submit_handler(this));
+			// MPI_Isend(&buffer[send_off], send_cnt, MpiTypeOf<T>::type,
+			//           send_to, tag, comm.comm, req_man->submit_handler(this));
 		}
 
 		++current;

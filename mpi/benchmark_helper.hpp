@@ -62,9 +62,11 @@ public:
 	}
 	void advace() {
 		pthread_mutex_lock(&thread_sync_);
-		MPI_Isend(&send_buf_[my_progress_], 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &send_req_[my_progress_]);
-		int index, flag;
-		MPI_Testany(max_progress_, send_req_, &index, &flag, MPI_STATUS_IGNORE);
+
+		// This procedure may not be executed by mnakao.
+		//		MPI_Isend(&send_buf_[my_progress_], 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &send_req_[my_progress_]);
+		//              int index, flag;
+		//		MPI_Testany(max_progress_, send_req_, &index, &flag, MPI_STATUS_IGNORE);
 		pthread_mutex_unlock(&thread_sync_);
 		++my_progress_;
 	}
@@ -72,7 +74,8 @@ public:
 		if(mpi.isMaster()) {
 			pthread_join(thread_, NULL);
 		}
-		MPI_Waitall(max_progress_, send_req_, MPI_STATUSES_IGNORE);
+		// This procedure may not be executed by mnakao.
+		//		MPI_Waitall(max_progress_, send_req_, MPI_STATUSES_IGNORE);
 	}
 
 private:
@@ -85,7 +88,8 @@ private:
 		for(int i = 0; i < mpi.size_2d; ++i) {
 			g_progress_[i] = 0;
 			recv_buf_[i] = 0; // ?????
-			MPI_Irecv(&recv_buf_[i], 1, MPI_INT, i, 0, MPI_COMM_WORLD, &recv_req_[i]);
+			// This procedure may not be executed by mnakao.
+			//			MPI_Irecv(&recv_buf_[i], 1, MPI_INT, i, 0, MPI_COMM_WORLD, &recv_req_[i]);
 		}
 		int* tmp_progress = new int[mpi.size_2d];
 		int* node_list = new int[mpi.size_2d];
@@ -128,7 +132,8 @@ private:
 				}
 				g_progress_[index] = recv_buf_[index];
 				if(g_progress_[index] < max_progress_) {
-					MPI_Irecv(&recv_buf_[index], 1, MPI_INT, index, 0, MPI_COMM_WORLD, &recv_req_[index]);
+				  // This procedure may not be executed by mnakao.
+				  //				  MPI_Irecv(&recv_buf_[index], 1, MPI_INT, index, 0, MPI_COMM_WORLD, &recv_req_[index]);
 				}
 			}
 			pthread_mutex_unlock(&thread_sync_);
