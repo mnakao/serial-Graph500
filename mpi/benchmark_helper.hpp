@@ -118,7 +118,8 @@ private:
 			pthread_mutex_lock(&thread_sync_);
 			while(true) {
 				int index, flag;
-				MPI_Testany(mpi.size_2d, recv_req_, &index, &flag, MPI_STATUS_IGNORE);
+				// This procedure may not be executed by mnakao.
+				//				MPI_Testany(mpi.size_2d, recv_req_, &index, &flag, MPI_STATUS_IGNORE);
 				if(flag == 0) {
 					if(++work_count > mpi.size_2d*2) {
 						work_count = 0;
