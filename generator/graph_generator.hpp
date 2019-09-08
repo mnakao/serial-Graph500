@@ -305,13 +305,15 @@ private:
 	// read
 	bool read_enabled_;
 	// The offset from which we read next or we are reading now.
-	MPI_Offset read_block_index_;
+  //	MPI_Offset read_block_index_;
+  long read_block_index_;
 	MPI_Request read_request_;
 	EdgeType* read_buffer_;
 
 	// write
 	bool write_enabled_;
-	MPI_Offset write_offset_;
+  //	MPI_Offset write_offset_;
+  long write_offset_;
 	EdgeType* write_buffer_;
 	int64_t write_buffer_filled_size_;
 	int64_t write_buffer_size_;
