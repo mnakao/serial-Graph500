@@ -1674,7 +1674,7 @@ void alltoall(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm) {
  */
 template <typename T>
 T* alltoallv(T* sendbuf, int* sendcount,
-		int* sendoffset, int* recvcount, int* recvoffset, MPI_Comm comm, int comm_size)
+	     int* sendoffset, int* recvcount, int* recvoffset, /*MPI_Comm comm, */int comm_size)
 {
 	sendoffset[0] = 0;
 	for(int r = 0; r < comm_size; ++r) {
@@ -1898,8 +1898,8 @@ class ScatterContext
 {
 public:
 	explicit ScatterContext(MPI_Comm comm)
-		: comm_(comm)
-		, max_threads_(omp_get_max_threads())
+	//		: comm_(comm)
+	  : max_threads_(omp_get_max_threads())
 		, thread_counts_(NULL)
 		, thread_offsets_(NULL)
 		, send_counts_(NULL)
@@ -1977,7 +1977,7 @@ public:
 		}
 #endif
 		return MpiCol::alltoallv(send_data, send_counts_, send_offsets_,
-				recv_counts_, recv_offsets_, comm_, comm_size_);
+					 recv_counts_, recv_offsets_, /*comm_, */comm_size_);
 	}
 
 	template <typename T>
@@ -2021,7 +2021,7 @@ public:
 	}
 
 private:
-	MPI_Comm comm_;
+  //	MPI_Comm comm_;
 	int comm_size_;
 	int buffer_width_;
 	int max_threads_;

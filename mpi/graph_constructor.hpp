@@ -527,7 +527,7 @@ private:
 		int recvcount[mpi.size_2dc];
 		int recvoffset[mpi.size_2dc+1];
 		return MpiCol::alltoallv(orig_vertexes_, num_vertexes_, sendoffset,
-				recvcount, recvoffset, mpi.comm_2dr, mpi.size_2dc);
+					 recvcount, recvoffset, /*mpi.comm_2dr,*/ mpi.size_2dc);
 	}
 };
 
