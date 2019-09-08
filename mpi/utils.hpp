@@ -402,7 +402,8 @@ void* shared_malloc(size_t nbytes) {
 		}
 		if(shmid == -1) {
 			perror("shmget");
-			MPI_Abort(MPI_COMM_WORLD, 1);
+			//			MPI_Abort(MPI_COMM_WORLD, 1);
+			exit(1);
 		}
 		addr = shmat(shmid, NULL, 0);
 		if(addr == (void*)-1) {
@@ -457,7 +458,8 @@ void test_shared_memory() {
 	global_result = result;
 	if(global_result == false) {
 		if(mpi.isMaster()) print_with_prefix("Shared memory test failed!! Please, check MPI_NUM_NODE.");
-		MPI_Abort(MPI_COMM_WORLD, 1);
+		//		MPI_Abort(MPI_COMM_WORLD, 1);
+		exit(1);
 	}
 }
 #else // #if SHARED_MEMORY
@@ -1380,7 +1382,8 @@ static void setup_2dcomm()
 			twod_c = mpi.size / twod_r;
 			if(twod_r == 0 || (twod_c * twod_r) != mpi.size) {
 				if(mpi.isMaster()) print_with_prefix("# of MPI processes(%d) cannot be divided by %d", mpi.size, twod_r);
-				MPI_Abort(MPI_COMM_WORLD, 1);
+				//				MPI_Abort(MPI_COMM_WORLD, 1);
+				exit(1);
 			}
 		}
 		else {
@@ -1392,7 +1395,8 @@ static void setup_2dcomm()
 			}
 			if(twod_c * twod_r != mpi.size) {
 				if(mpi.isMaster()) print_with_prefix("Could not find the RxC combination for the # of processes(%d)", mpi.size);
-				MPI_Abort(MPI_COMM_WORLD, 1);
+				//				MPI_Abort(MPI_COMM_WORLD, 1);
+				exit(1);
 			}
 		}
 
@@ -1440,7 +1444,8 @@ static void setup_2dcomm_on_3d()
 		if(mpi.isMaster()) fprintf(IMD_OUT, "Dimension: (%dx%dx%dx%d) -> (%dx%d)\n", X, Y, Z1, Z2, mpi.size_2dr, mpi.size_2dc);
 		if(mpi.size != mpi.size_2dr * mpi.size_2dc) {
 			if(mpi.isMaster()) fprintf(IMD_OUT, "Error: # of processes does not match\n");
-			MPI_Abort(MPI_COMM_WORLD, 1);
+			//			MPI_Abort(MPI_COMM_WORLD, 1);
+			exit(1);
 		}
 
 		int x, y, z1, z2;
@@ -1459,7 +1464,8 @@ static void setup_2dcomm_on_3d()
 	}
 	else {
 		if(mpi.isMaster()) fprintf(IMD_OUT, "Program error.\n");
-		MPI_Abort(MPI_COMM_WORLD, 1);
+		//		MPI_Abort(MPI_COMM_WORLD, 1);
+		exit(1);
 	}
 
 }

@@ -482,7 +482,8 @@ int read_log_file(LogFileFormat* log, int SCALE, int edgefactor, double* bfs_tim
 		}
 		// MPI_Bcast(&resume_root_idx, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		if(resume_root_idx == -2) {
-			MPI_Abort(MPI_COMM_WORLD, 1);
+		  //			MPI_Abort(MPI_COMM_WORLD, 1);
+		  exit(1);
 		}
 	}
 	return resume_root_idx;
