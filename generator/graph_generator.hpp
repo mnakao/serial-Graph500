@@ -70,16 +70,16 @@ public:
 		else {
 			data_in_file_ = true;
 			sprintf(filepath_, "%s-%03d", filepath, mpi.rank_2d);
-			MPI_File_open(MPI_COMM_SELF, const_cast<char*>(filepath_),
-							MPI_MODE_RDWR |
-							MPI_MODE_CREATE |
+			//			MPI_File_open(MPI_COMM_SELF, const_cast<char*>(filepath_),
+			//							MPI_MODE_RDWR |
+			//							MPI_MODE_CREATE |
 						//	MPI_MODE_EXCL |
-							MPI_MODE_DELETE_ON_CLOSE |
-							MPI_MODE_UNIQUE_OPEN,
-							MPI_INFO_NULL, &edge_file_);
-			MPI_File_set_atomicity(edge_file_, 0);
-			MPI_File_set_view(edge_file_, 0,
-					MpiTypeOf<EdgeType>::type, MpiTypeOf<EdgeType>::type, const_cast<char*>("native"), MPI_INFO_NULL);
+			//							MPI_MODE_DELETE_ON_CLOSE |
+			//							MPI_MODE_UNIQUE_OPEN,
+			//							MPI_INFO_NULL, &edge_file_);
+			//			MPI_File_set_atomicity(edge_file_, 0);
+			//			MPI_File_set_view(edge_file_, 0,
+			//					MpiTypeOf<EdgeType>::type, MpiTypeOf<EdgeType>::type, const_cast<char*>("native"), MPI_INFO_NULL);
 		}
 	}
 
@@ -109,9 +109,9 @@ public:
 				EdgeType *buffer_to_read, *buffer_for_user;
 				getReadBuffer(&buffer_to_read, &buffer_for_user);
 				if(edge_filled_size_ > 0) {
-					int read_count = static_cast<int>(std::min<int64_t>(edge_filled_size_, CHUNK_SIZE));
-					MPI_File_iread_at(edge_file_, 0,
-							buffer_to_read, read_count, MpiTypeOf<EdgeType>::type, &read_request_);
+				  //					int read_count = static_cast<int>(std::min<int64_t>(edge_filled_size_, CHUNK_SIZE));
+					//					MPI_File_iread_at(edge_file_, 0,
+					//							buffer_to_read, read_count, MpiTypeOf<EdgeType>::type, &read_request_);
 				}
 			}
 		}
@@ -143,10 +143,10 @@ public:
 				getReadBuffer(&buffer_to_read, &buffer_for_user);
 				*pp_buffer = buffer_for_user;
 				if(edge_filled_size_ > read_offset) {
-					int read_count = static_cast<int>
-						(std::min<int64_t>(edge_filled_size_ - read_offset, CHUNK_SIZE));
-					MPI_File_iread_at(edge_file_, read_offset,
-							buffer_to_read, read_count, MpiTypeOf<EdgeType>::type, &read_request_);
+				  //					int read_count = static_cast<int>
+				  //						(std::min<int64_t>(edge_filled_size_ - read_offset, CHUNK_SIZE));
+					//					MPI_File_iread_at(edge_file_, read_offset,
+					//							buffer_to_read, read_count, MpiTypeOf<EdgeType>::type, &read_request_);
 				}
 			}
 			return filled_count;
@@ -273,9 +273,9 @@ private:
 			memcpy(edge_memory_ + write_offset_, edge_data, count*sizeof(EdgeType));
 		}
 		if(data_in_file_) {
-			MPI_Status write_result;
-			MPI_File_write_at(edge_file_, write_offset_,
-					edge_data, count, MpiTypeOf<EdgeType>::type, &write_result);
+		  //			MPI_Status write_result;
+			//			MPI_File_write_at(edge_file_, write_offset_,
+			//					edge_data, count, MpiTypeOf<EdgeType>::type, &write_result);
 		}
 		write_offset_ += count;
 	}
