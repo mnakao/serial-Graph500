@@ -729,7 +729,7 @@ private:
 
 	void scatterAndScanEdges(EdgeList* edge_list, GraphType& g) {
 		TRACER(scan_edge);
-		ScatterContext scatter(mpi.comm_2d);
+		ScatterContext scatter(/*mpi.comm_2d*/0);
 		int64_t* edges_to_send = static_cast<int64_t*>(xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(int64_t))); // 
 		int num_loops = edge_list->beginRead(false);
 
@@ -1147,7 +1147,7 @@ private:
 
 	void scatterAndStore(EdgeList* edge_list, GraphType& g) {
 		TRACER(store_edge);
-		ScatterContext scatter(mpi.comm_2d);
+		ScatterContext scatter(/*mpi.comm_2d*/0);
 		EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(2 * EdgeList::CHUNK_SIZE * sizeof(EdgeType))); //
 
 		//const int64_t num_local_verts = g.num_local_verts_;

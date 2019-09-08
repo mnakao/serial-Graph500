@@ -244,7 +244,7 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::has
 {
 	TRACER(redistribution);
 	typedef typename EdgeList::edge_type EdgeType;
-	ScatterContext scatter(mpi.comm_2d);
+	ScatterContext scatter(/*mpi.comm_2d*/0);
 	EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType)));  // 
 	int num_loops = edge_list->beginRead(true);
 	edge_list->beginWrite();
@@ -304,7 +304,7 @@ template <typename EdgeList>
 void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::no_weight dummy = 0)
 {
 	typedef typename EdgeList::edge_type EdgeType;
-	ScatterContext scatter(mpi.comm_2d);
+	ScatterContext scatter(/*mpi.comm_2d*/0);
 	EdgeType* edges_to_send = static_cast<EdgeType*>(xMPI_Alloc_mem(EdgeList::CHUNK_SIZE * sizeof(EdgeType))); //
 	int num_loops = edge_list->beginRead(true);
 	edge_list->beginWrite();

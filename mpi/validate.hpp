@@ -637,8 +637,8 @@ bool validate(EdgeList* edge_list, const int64_t root, int64_t* const pred, int6
 	 * one, and check that there is an edge from each vertex to its claimed
 	 * predecessor.  Also, count visited edges (including duplicates and
 	 * self-loops).  */
-	ScatterContext scatter_r(mpi.comm_2dr);
-	ScatterContext scatter_c(mpi.comm_2dc);
+    ScatterContext scatter_r(/*mpi.comm_2dr*/0);
+    ScatterContext scatter_c(/*mpi.comm_2dc*/0);
 	unsigned char* restrict pred_valid = (unsigned char*)cache_aligned_xmalloc(nlocalverts * sizeof(unsigned char));
 	memset(pred_valid, 0, nlocalverts * sizeof(unsigned char));
 	int64_t edge_visit_count = 0;

@@ -61,10 +61,10 @@ class AsyncAlltoallManager {
 		std::vector<PointerData> send_ptr;
 	};
 public:
-	AsyncAlltoallManager(MPI_Comm comm_, AlltoallBufferHandler* buffer_provider_)
-		: comm_(comm_)
-		, buffer_provider_(buffer_provider_)
-		, scatter_(comm_)
+  AsyncAlltoallManager(int aaa, /*MPI_Comm comm_, */AlltoallBufferHandler* buffer_provider_)
+  //		: comm_(comm_)
+    : buffer_provider_(buffer_provider_)
+		, scatter_(/*comm_*/0)
 	{
 		CTRACER(AsyncA2A_construtor);
 		comm_size_ = 1;
@@ -361,7 +361,7 @@ private:
 		pthread_mutex_t thread_sync_;
 	} *d_;
 
-	MPI_Comm comm_;
+  //	MPI_Comm comm_;
 
 	int buffer_size_;
 	int comm_size_;

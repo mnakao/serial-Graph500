@@ -1897,7 +1897,7 @@ private:
 class ScatterContext
 {
 public:
-	explicit ScatterContext(MPI_Comm comm)
+  explicit ScatterContext(/*MPI_Comm comm*/int aaa)
 	//		: comm_(comm)
 	  : max_threads_(omp_get_max_threads())
 		, thread_counts_(NULL)
@@ -2043,7 +2043,7 @@ namespace MpiCol {
 template <typename Mapping>
 void scatter(const Mapping mapping, int data_count, MPI_Comm comm)
 {
-	ScatterContext scatter(comm);
+  ScatterContext scatter(/*comm*/0);
 	typename Mapping::send_type* restrict partitioned_data = static_cast<typename Mapping::send_type*>(
 						cache_aligned_xmalloc(data_count*sizeof(typename Mapping::send_type)));
 #pragma omp parallel
@@ -2090,7 +2090,7 @@ void scatter(const Mapping mapping, int data_count, MPI_Comm comm)
 template <typename Mapping>
 void gather(const Mapping mapping, int data_count, MPI_Comm comm)
 {
-	ScatterContext scatter(comm);
+  ScatterContext scatter(/*comm*/0);
 
 	int* restrict local_indices = static_cast<int*>(
 			cache_aligned_xmalloc(data_count*sizeof(int)));
