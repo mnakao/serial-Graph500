@@ -1148,10 +1148,10 @@ void set_affinity()
 		// create comm_z
 		if(mpi.size_z > 1) {
 			if(dist_round_robin) {
-				MPI_Comm_split(MPI_COMM_WORLD, mpi.rank % num_node, mpi.rank_z, &mpi.comm_z);
+			  //				MPI_Comm_split(MPI_COMM_WORLD, mpi.rank % num_node, mpi.rank_z, &mpi.comm_z);
 			}
 			else {
-				MPI_Comm_split(MPI_COMM_WORLD, mpi.rank / max_procs_per_node, mpi.rank_z, &mpi.comm_z);
+			  //				MPI_Comm_split(MPI_COMM_WORLD, mpi.rank / max_procs_per_node, mpi.rank_z, &mpi.comm_z);
 			}
 
 			// test shared memory
@@ -1161,7 +1161,7 @@ void set_affinity()
 			if(dist_round_robin == false && mpi.isRowMajor == false) {
 				mpi.rank_y = mpi.rank_2dc / mpi.size_z;
 				mpi.size_y = mpi.size_2dr / mpi.size_z;
-				MPI_Comm_split(mpi.comm_2dc, mpi.rank_z, mpi.rank_2dc / mpi.size_z, &mpi.comm_y);
+				//				MPI_Comm_split(mpi.comm_2dc, mpi.rank_z, mpi.rank_2dc / mpi.size_z, &mpi.comm_y);
 			}
 		}
 	}
@@ -1419,11 +1419,11 @@ static void setup_2dcomm()
 
 	mpi.rank_2d = mpi.rank_2dr + mpi.rank_2dc * mpi.size_2dr;
 	mpi.size_2d = mpi.size_2dr * mpi.size_2dc;
-	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dc, mpi.rank_2dr, &mpi.comm_2dc);
+	//	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dc, mpi.rank_2dr, &mpi.comm_2dc);
 	//	mpi.comm_c.comm = mpi.comm_2dc;
-	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dr, mpi.rank_2dc, &mpi.comm_2dr);
+	//	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dr, mpi.rank_2dc, &mpi.comm_2dr);
 	//	mpi.comm_r.comm = mpi.comm_2dr;
-	MPI_Comm_split(MPI_COMM_WORLD, 0, mpi.rank_2d, &mpi.comm_2d);
+	//	MPI_Comm_split(MPI_COMM_WORLD, 0, mpi.rank_2d, &mpi.comm_2d);
 
 	if(mpi.isMultiDimAvailable) {
 		setup_rank_map(mpi.comm_r);
@@ -1458,9 +1458,9 @@ static void setup_2dcomm_on_3d()
 
 		mpi.rank_2d = mpi.rank_2dr + mpi.rank_2dc * mpi.size_2dr;
 		mpi.size_2d = mpi.size_2dr * mpi.size_2dc;
-		MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dc, mpi.rank_2dr, &mpi.comm_2dc);
-		MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dr, mpi.rank_2dc, &mpi.comm_2dr);
-		MPI_Comm_split(MPI_COMM_WORLD, 0, mpi.rank_2d, &mpi.comm_2d);
+		//		MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dc, mpi.rank_2dr, &mpi.comm_2dc);
+		//		MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dr, mpi.rank_2dc, &mpi.comm_2dr);
+		//		MPI_Comm_split(MPI_COMM_WORLD, 0, mpi.rank_2d, &mpi.comm_2d);
 	}
 	else {
 		if(mpi.isMaster()) fprintf(IMD_OUT, "Program error.\n");
@@ -1476,8 +1476,8 @@ void cleanup_2dcomm()
 		free(mpi.comm_r.rank_map);
 		free(mpi.comm_c.rank_map);
 	}
-	MPI_Comm_free(&mpi.comm_2dr);
-	MPI_Comm_free(&mpi.comm_2dc);
+	//	MPI_Comm_free(&mpi.comm_2dr);
+	//	MPI_Comm_free(&mpi.comm_2dc);
 	close_imd_out_file();
 }
 
