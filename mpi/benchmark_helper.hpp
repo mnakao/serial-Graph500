@@ -127,10 +127,12 @@ private:
 					}
 					continue;
 				}
-				if(index == MPI_UNDEFINED) {
-					complete = true;
-					break;
-				}
+				// This procedure may not be executed by mnakao
+				//				if(index == MPI_UNDEFINED) {
+				//					complete = true;
+				//					break;
+				//				}
+
 				g_progress_[index] = recv_buf_[index];
 				if(g_progress_[index] < max_progress_) {
 				  // This procedure may not be executed by mnakao.
