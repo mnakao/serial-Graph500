@@ -345,9 +345,9 @@ public:
 		virtual int buffer_length() {
 			return BUF_SIZE;
 		}
-		virtual MPI_Datatype data_type() {
-			return MpiTypeOf<T>::type;
-		}
+	  //		virtual MPI_Datatype data_type() {
+	  //			return MpiTypeOf<T>::type;
+	  //		}
 		virtual int element_size() {
 			return sizeof(T);
 		}

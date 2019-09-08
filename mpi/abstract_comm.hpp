@@ -22,7 +22,7 @@ public:
 	virtual void* second_buffer() = 0;
 	virtual int max_size() = 0;
 	virtual int buffer_length() = 0;
-	virtual MPI_Datatype data_type() = 0;
+  //	virtual MPI_Datatype data_type() = 0;
 	virtual int element_size() = 0;
 	virtual void received(void* buf, int offset, int length, int from) = 0;
 	virtual void finish() = 0;
@@ -239,12 +239,12 @@ public:
 
 			void* sendbuf = buffer_provider_->second_buffer();
 			void* recvbuf = buffer_provider_->clear_buffers();
-			MPI_Datatype type = buffer_provider_->data_type();
+			//			MPI_Datatype type = buffer_provider_->data_type();
 			int recvbufsize = buffer_provider_->max_size();
 			PROF(merge_time_ += tk_all);
 			USER_START(a2a_comm);
 			VERVOSE(if(loop > 0 && mpi.isMaster()) print_with_prefix("Alltoall with pointer (Again)"));
-			scatter_.alltoallv(sendbuf, recvbuf, type, recvbufsize);
+			scatter_.alltoallv(sendbuf, recvbuf, /*type, */recvbufsize);
 			PROF(comm_time_ += tk_all);
 			USER_END(a2a_comm);
 
@@ -317,11 +317,11 @@ public:
 
 		void* sendbuf = buffer_provider_->second_buffer();
 		void* recvbuf = buffer_provider_->clear_buffers();
-		MPI_Datatype type = buffer_provider_->data_type();
+		//		MPI_Datatype type = buffer_provider_->data_type();
 		int recvbufsize = buffer_provider_->max_size();
 		PROF(merge_time_ += tk_all);
 		USER_START(a2a_comm);
-		scatter_.alltoallv(sendbuf, recvbuf, type, recvbufsize);
+		scatter_.alltoallv(sendbuf, recvbuf/*, type*/, recvbufsize);
 		PROF(comm_time_ += tk_all);
 		USER_END(a2a_comm);
 

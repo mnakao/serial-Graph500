@@ -170,37 +170,37 @@ MPI_GLOBALS mpi;
 // For generic typing
 //-------------------------------------------------------------//
 
-template <> struct MpiTypeOf<char> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<char>::type = MPI_CHAR;
-template <> struct MpiTypeOf<short> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<short>::type = MPI_SHORT;
-template <> struct MpiTypeOf<int> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<int>::type = MPI_INT;
-template <> struct MpiTypeOf<long> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<long>::type = MPI_LONG;
-template <> struct MpiTypeOf<long long> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<long long>::type = MPI_LONG_LONG;
-template <> struct MpiTypeOf<float> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<float>::type = MPI_FLOAT;
-template <> struct MpiTypeOf<double> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<double>::type = MPI_DOUBLE;
-template <> struct MpiTypeOf<unsigned char> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<unsigned char>::type = MPI_UNSIGNED_CHAR;
-template <> struct MpiTypeOf<unsigned short> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<unsigned short>::type = MPI_UNSIGNED_SHORT;
-template <> struct MpiTypeOf<unsigned int> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<unsigned int>::type = MPI_UNSIGNED;
-template <> struct MpiTypeOf<unsigned long> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<unsigned long>::type = MPI_UNSIGNED_LONG;
-template <> struct MpiTypeOf<unsigned long long> { static const MPI_Datatype type; };
-const MPI_Datatype MpiTypeOf<unsigned long long>::type = MPI_UNSIGNED_LONG_LONG;
+//template <> struct MpiTypeOf<char> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<char>::type = MPI_CHAR;
+//template <> struct MpiTypeOf<short> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<short>::type = MPI_SHORT;
+//template <> struct MpiTypeOf<int> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<int>::type = MPI_INT;
+//template <> struct MpiTypeOf<long> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<long>::type = MPI_LONG;
+//template <> struct MpiTypeOf<long long> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<long long>::type = MPI_LONG_LONG;
+//template <> struct MpiTypeOf<float> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<float>::type = MPI_FLOAT;
+//template <> struct MpiTypeOf<double> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<double>::type = MPI_DOUBLE;
+//template <> struct MpiTypeOf<unsigned char> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<unsigned char>::type = MPI_UNSIGNED_CHAR;
+//template <> struct MpiTypeOf<unsigned short> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<unsigned short>::type = MPI_UNSIGNED_SHORT;
+//template <> struct MpiTypeOf<unsigned int> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<unsigned int>::type = MPI_UNSIGNED;
+//template <> struct MpiTypeOf<unsigned long> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<unsigned long>::type = MPI_UNSIGNED_LONG;
+//template <> struct MpiTypeOf<unsigned long long> { static const MPI_Datatype type; };
+//const MPI_Datatype MpiTypeOf<unsigned long long>::type = MPI_UNSIGNED_LONG_LONG;
 
 
 template <typename T> struct template_meta_helper { typedef void type; };
 
-template <typename T> MPI_Datatype get_mpi_type(T& instance) {
-	return MpiTypeOf<T>::type;
-}
+//template <typename T> MPI_Datatype get_mpi_type(T& instance) {
+//	return MpiTypeOf<T>::type;
+//}
 
 int64_t get_time_in_microsecond()
 {
@@ -1992,7 +1992,7 @@ public:
 	  MPI_Free_mem(buffer);
 	}
 
-	void alltoallv(void* sendbuf, void* recvbuf, MPI_Datatype type, int recvbufsize)
+  void alltoallv(void* sendbuf, void* recvbuf, /*MPI_Datatype type, */int recvbufsize)
 	{
 		recv_offsets_[0] = 0;
 		for(int r = 0; r < comm_size_; ++r) {
@@ -2011,7 +2011,7 @@ public:
 		}
 		//		MPI_Alltoallv(sendbuf, send_counts_, send_offsets_, type,
 		//				recvbuf, recv_counts_, recv_offsets_, type, comm_);
-		memcpy(recvbuf, sendbuf, sizeof(type)*recv_counts_[0]);  // send_offsets_[0] = recv_offsets_[0] = 0
+		memcpy(recvbuf, sendbuf, 8*recv_counts_[0]);  // send_offsets_[0] = recv_offsets_[0] = 0
 	}
 
 private:

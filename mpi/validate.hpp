@@ -34,7 +34,7 @@ struct gather {
   void* output;
   size_t output_count;
   size_t nrequests_max;
-  MPI_Datatype datatype;
+  //  MPI_Datatype datatype;
   int valid;
   MPI_Comm comm;
   size_t* local_indices;
@@ -48,7 +48,7 @@ struct gather {
   int* recv_offsets;
 };
 
-gather* init_gather(void* input, size_t input_count, size_t elt_size, void* output, size_t output_count, size_t nrequests_max, MPI_Datatype dt) {
+gather* init_gather(void* input, size_t input_count, size_t elt_size, void* output, size_t output_count, size_t nrequests_max/*, MPI_Datatype dt*/) {
   gather* g = (gather*)cache_aligned_xmalloc(sizeof(gather));
   g->input = input;
   g->input_count = input_count;
@@ -56,7 +56,7 @@ gather* init_gather(void* input, size_t input_count, size_t elt_size, void* outp
   g->output = output;
   g->output_count = output_count;
   g->nrequests_max = nrequests_max;
-  g->datatype = dt;
+  //  g->datatype = dt;
   g->valid = 0;
   MPI_Comm_dup(mpi.comm_2d, &g->comm);
   g->local_indices = (size_t*)page_aligned_xmalloc(nrequests_max * sizeof(size_t));
@@ -240,8 +240,8 @@ struct scatter_constant {
   int* recv_offsets;
 };
 
-scatter_constant* init_scatter_constant(void* array, size_t array_count, size_t elt_size, void* constant, size_t nrequests_max, MPI_Datatype dt /* unused */) {
-  (void)dt;
+scatter_constant* init_scatter_constant(void* array, size_t array_count, size_t elt_size, void* constant, size_t nrequests_max/*, MPI_Datatype dt*/ /* unused */) {
+  //  (void)dt;
   scatter_constant* sc = (scatter_constant*)cache_aligned_xmalloc(sizeof(scatter_constant));
   sc->array = array;
   sc->array_count = array_count;
@@ -378,7 +378,7 @@ struct scatter {
   size_t elt_size;
   char* send_data;
   size_t nrequests_max;
-  MPI_Datatype datatype;
+  //  MPI_Datatype datatype;
   int valid;
   MPI_Comm comm;
   int* remote_ranks;
@@ -391,14 +391,14 @@ struct scatter {
   int* recv_offsets;
 };
 
-scatter* init_scatter(void* array, size_t array_count, size_t elt_size, size_t nrequests_max, MPI_Datatype dt) {
+scatter* init_scatter(void* array, size_t array_count, size_t elt_size, size_t nrequests_max/*, MPI_Datatype dt*/) {
   scatter* sc = (scatter*)cache_aligned_xmalloc(sizeof(scatter));
   sc->array = array;
   sc->array_count = array_count;
   sc->elt_size = elt_size;
   sc->send_data = (char*)page_aligned_xmalloc(nrequests_max * elt_size);
   sc->nrequests_max = nrequests_max;
-  sc->datatype = dt;
+  //  sc->datatype = dt;
   sc->valid = 0;
   MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
@@ -914,7 +914,7 @@ int64_t build_bfs_depth_map(const int64_t root, int64_t* const pred)
     if (root_is_mine) write_pred_entry_depth(&pred[root_local], 0);
   }
   int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */  // 
-  gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts), MPI_INT64_T);
+  gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts)/*, MPI_INT64_T*/);
   int* restrict pred_owner = (int*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int));
   int64_t* restrict pred_local = (int64_t*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int64_t));
   int iter_number = 0;
@@ -1005,7 +1005,7 @@ int64_t check_bfs_depth_map_using_predecessors(const int64_t root, const int64_t
     }
   }
   int64_t* restrict pred_pred = (int64_t*)xMPI_Alloc_mem(std::min(chunksize_, nlocalverts) * sizeof(int64_t)); /* Predecessor info of predecessor vertex for each local vertex */  //
-    gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts), MPI_INT64_T);
+  gather* pred_win = init_gather((void*)pred, nlocalverts, sizeof(int64_t), pred_pred, std::min(chunksize_, nlocalverts), std::min(chunksize_, nlocalverts)/*, MPI_INT64_T*/);
     int* restrict pred_owner = (int*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int));
     int64_t* restrict pred_local = (int64_t*)cache_aligned_xmalloc(std::min(chunksize_, nlocalverts) * sizeof(int64_t));
     for (int64_t ii = 0; ii < maxlocalverts; ii += chunksize_) {
