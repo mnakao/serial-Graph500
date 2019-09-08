@@ -140,9 +140,9 @@ struct MPI_GLOBALS {
 	int size_2d; // = size
 	int size_2dc; // = comm_2dr.size()
 	int size_2dr; // = comm_2dc.size()
-	MPI_Comm comm_2d;
-	MPI_Comm comm_2dr; // = comm_x
-	MPI_Comm comm_2dc;
+  //	MPI_Comm comm_2d;
+  //	MPI_Comm comm_2dr; // = comm_x
+  //	MPI_Comm comm_2dc;
 	bool isRowMajor;
 
 	// multi dimension
@@ -161,7 +161,8 @@ struct MPI_GLOBALS {
 	// utility method
 	bool isMaster() const { return rank == 0; }
 	bool isRmaster() const { return rank == size-1; }
-	bool isYdimAvailable() const { return comm_y != comm_2dc; }
+  //    bool isYdimAvailable() const { return comm_y != comm_2dc; }
+        bool isYdimAvailable() const { return false; }
 };
 
 MPI_GLOBALS mpi;
@@ -382,7 +383,7 @@ void xfree(void* p) {
 
 #if SHARED_MEMORY
 void* shared_malloc(size_t nbytes) {
-	MPI_Comm comm = mpi.comm_z;
+  //	MPI_Comm comm = mpi.comm_z;
 	int rank = 0;
 	//	MPI_Comm_rank(comm, &rank);
 	key_t shm_key;
@@ -1556,7 +1557,7 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 	}
 
 	// Initialize comm_[yz]
-	mpi.comm_y = mpi.comm_2dc;
+	//	mpi.comm_y = mpi.comm_2dc;
 	mpi.comm_z = MPI_COMM_SELF;
 	mpi.size_y = mpi.size_2dr;
 	mpi.size_z = 1;
@@ -1995,7 +1996,7 @@ public:
 	void free(T* buffer) {
 	  //	  printf("%p\n", buffer);
 	  //free(buffer);
-	  MPI_Free_mem(buffer);
+	  	  MPI_Free_mem(buffer);
 	}
 
   void alltoallv(void* sendbuf, void* recvbuf, /*MPI_Datatype type, */int recvbufsize)
