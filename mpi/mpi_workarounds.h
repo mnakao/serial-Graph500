@@ -10,7 +10,7 @@
 #ifndef MPI_WORKAROUNDS_H
 #define MPI_WORKAROUNDS_H
 
-#include <mpi.h> /* To get version number */
+//#include <mpi.h> /* To get version number */
 
 /* Settings for user modification ----------------------------------- */
 

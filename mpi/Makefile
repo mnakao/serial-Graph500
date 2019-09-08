@@ -26,8 +26,8 @@ GCC_BASE := -fopenmp -g -Wall -Drestrict=__restrict__ -D__STDC_CONSTANT_MACROS -
 FCC_BASE := -Kopenmp -Xg -Drestrict=__restrict__ -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -D__STDC_FORMAT_MACROS -g #-Nquickdbg=heapchk # -Koptmsg=2
 #FCC_BASE := -Xg -g -Drestrict=__restrict__ -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -D__STDC_FORMAT_MACROS
 
-MPICC := mpicc
-MPICPP := mpicxx
+MPICC := gcc
+MPICPP := g++
 
 BINS := runnable
 OBJS := main.o low_level_func.o ../generator/splittable_mrg.o

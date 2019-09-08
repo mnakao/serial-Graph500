@@ -16,7 +16,7 @@
 #ifndef VALIDATE_HPP_
 #define VALIDATE_HPP_
 
-#include <mpi.h>
+//#include <mpi.h>
 #include <assert.h>
 
 #include <algorithm>
