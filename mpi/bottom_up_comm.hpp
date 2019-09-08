@@ -34,8 +34,8 @@ public:
 		MPI_Comm_free(&mpi_comm);
 #endif
 	}
-	void init(MPI_Comm mpi_comm__) {
-		mpi_comm = mpi_comm__;
+  void init(/*MPI_Comm mpi_comm__*/) {
+    //		mpi_comm = mpi_comm__;
 #if OVERLAP_WAVE_AND_PRED
 		MPI_Comm_dup(mpi_comm__, &mpi_comm);
 #endif
@@ -120,7 +120,7 @@ protected:
 		int rank;
 	};
 
-	MPI_Comm mpi_comm;
+  //	MPI_Comm mpi_comm;
 	std::vector<void*> free_list;
 	BottomUpSubstepData send_pair[NBUF];
 	BottomUpSubstepData recv_pair[NBUF];
@@ -178,9 +178,9 @@ protected:
 class MpiBottomUpSubstepComm : public BottomUpSubstepCommBase {
 	typedef BottomUpSubstepCommBase super__;
 public:
-	MpiBottomUpSubstepComm(MPI_Comm mpi_comm__)
+  MpiBottomUpSubstepComm(/*MPI_Comm mpi_comm__*/)
 	{
-		init(mpi_comm__);
+	  init(/*mpi_comm__*/);
 	}
 	virtual ~MpiBottomUpSubstepComm() {
 	}

@@ -214,7 +214,7 @@ public:
 
 		assert (smem_ptr == (int8_t*)buffer_.shared_memory_ + total_size_of_shared_memory);
 
-		bottom_up_substep_ = new MpiBottomUpSubstepComm(mpi.comm_2dr);
+		bottom_up_substep_ = new MpiBottomUpSubstepComm(/*mpi.comm_2dr*/);
 		bottom_up_substep_->register_memory(buffer_.shared_memory_, total_size_of_shared_memory);
 
 		cq_list_ = NULL;

@@ -472,14 +472,14 @@ public:
 	AllgatherHandler() { }
 	virtual ~AllgatherHandler() { }
 
-	void start(MpiRequestManager* req_man_, T *buffer_, int* count_, int* offset_, MPI_Comm comm_,
+  void start(MpiRequestManager* req_man_, T *buffer_, int* count_, int* offset_, /*MPI_Comm comm_,*/
 			int rank_, int size_, int left_, int right_, int tag_)
 	{
 		req_man = req_man_;
 		buffer = buffer_;
 		count = count_;
 		offset = offset_;
-		comm = comm_;
+		//		comm = comm_;
 		rank = rank_;
 		size = size_;
 		left = left_;
@@ -507,7 +507,7 @@ private:
 	T *buffer;
 	int *count;
 	int *offset;
-	MPI_Comm comm;
+  //	MPI_Comm comm;
 	int rank;
 	int size;
 	int left;
