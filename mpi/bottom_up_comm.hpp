@@ -31,13 +31,13 @@ public:
 	BottomUpSubstepCommBase() { }
 	virtual ~BottomUpSubstepCommBase() {
 #if OVERLAP_WAVE_AND_PRED
-		MPI_Comm_free(&mpi_comm);
+	  //		MPI_Comm_free(&mpi_comm);
 #endif
 	}
   void init(/*MPI_Comm mpi_comm__*/) {
     //		mpi_comm = mpi_comm__;
 #if OVERLAP_WAVE_AND_PRED
-		MPI_Comm_dup(mpi_comm__, &mpi_comm);
+    //		MPI_Comm_dup(mpi_comm__, &mpi_comm);
 #endif
 		int size = 1, rank = 0;
 		//		MPI_Comm_size(mpi_comm__, &size);

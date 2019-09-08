@@ -36,7 +36,7 @@ struct gather {
   size_t nrequests_max;
   //  MPI_Datatype datatype;
   int valid;
-  MPI_Comm comm;
+  //  MPI_Comm comm;
   size_t* local_indices;
   int* remote_ranks;
   //  MPI_Aint* remote_indices;
@@ -58,7 +58,7 @@ gather* init_gather(void* input, size_t input_count, size_t elt_size, void* outp
   g->nrequests_max = nrequests_max;
   //  g->datatype = dt;
   g->valid = 0;
-  MPI_Comm_dup(mpi.comm_2d, &g->comm);
+  //  MPI_Comm_dup(mpi.comm_2d, &g->comm);
   g->local_indices = (size_t*)page_aligned_xmalloc(nrequests_max * sizeof(size_t));
   g->remote_ranks = (int*)page_aligned_xmalloc(nrequests_max * sizeof(int));
   //  g->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
@@ -83,7 +83,7 @@ void destroy_gather(gather* g) {
   free(g->local_indices); g->local_indices = NULL;
   free(g->remote_ranks); g->remote_ranks = NULL;
   free(g->remote_indices); g->remote_indices = NULL;
-  MPI_Comm_free(&g->comm);
+  //  MPI_Comm_free(&g->comm);
   free(g->send_counts); g->send_counts = NULL;
   free(g->send_offsets); g->send_offsets = NULL;
   free(g->recv_counts); g->recv_counts = NULL;
@@ -229,7 +229,7 @@ struct scatter_constant {
   void* constant;
   size_t nrequests_max;
   int valid;
-  MPI_Comm comm;
+  //  MPI_Comm comm;
   int* remote_ranks;
   //  MPI_Aint* remote_indices;
   long* remote_indices;
@@ -249,7 +249,7 @@ scatter_constant* init_scatter_constant(void* array, size_t array_count, size_t 
   sc->constant = constant;
   sc->nrequests_max = nrequests_max;
   sc->valid = 0;
-  MPI_Comm_dup(mpi.comm_2d, &sc->comm);
+  //  MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
   //  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
   sc->remote_indices = (long*)page_aligned_xmalloc(nrequests_max * sizeof(long));
@@ -267,7 +267,7 @@ void destroy_scatter_constant(scatter_constant* sc) {
   assert (!sc->valid);
   free(sc->remote_ranks); sc->remote_ranks = NULL;
   free(sc->remote_indices); sc->remote_indices = NULL;
-  MPI_Comm_free(&sc->comm);
+  //  MPI_Comm_free(&sc->comm);
   free(sc->send_counts); sc->send_counts = NULL;
   free(sc->send_offsets); sc->send_offsets = NULL;
   free(sc->recv_counts); sc->recv_counts = NULL;
@@ -380,7 +380,7 @@ struct scatter {
   size_t nrequests_max;
   //  MPI_Datatype datatype;
   int valid;
-  MPI_Comm comm;
+  //  MPI_Comm comm;
   int* remote_ranks;
   //  MPI_Aint* remote_indices;
   long* remote_indices;
@@ -400,7 +400,7 @@ scatter* init_scatter(void* array, size_t array_count, size_t elt_size, size_t n
   sc->nrequests_max = nrequests_max;
   //  sc->datatype = dt;
   sc->valid = 0;
-  MPI_Comm_dup(mpi.comm_2d, &sc->comm);
+  //  MPI_Comm_dup(mpi.comm_2d, &sc->comm);
   sc->remote_ranks = (int*)cache_aligned_xmalloc(nrequests_max * sizeof(int));
   //  sc->remote_indices = (MPI_Aint*)page_aligned_xmalloc(nrequests_max * sizeof(MPI_Aint));
   sc->remote_indices = (long*)page_aligned_xmalloc(nrequests_max * sizeof(long));
@@ -419,7 +419,7 @@ void destroy_scatter(scatter* sc) {
   free(sc->send_data); sc->send_data = NULL;
   free(sc->remote_ranks); sc->remote_ranks = NULL;
   free(sc->remote_indices); sc->remote_indices = NULL;
-  MPI_Comm_free(&sc->comm);
+  //  MPI_Comm_free(&sc->comm);
   free(sc->send_counts); sc->send_counts = NULL;
   free(sc->send_offsets); sc->send_offsets = NULL;
   free(sc->recv_counts); sc->recv_counts = NULL;
