@@ -72,7 +72,7 @@ gather* init_gather(void* input, size_t input_count, size_t elt_size, void* outp
   g->recv_offsets = (int*)cache_aligned_xmalloc((size + 1) * sizeof(int));
 #ifndef NDEBUG
   int datasize;
-  MPI_Type_size(dt, &datasize);
+  //  MPI_Type_size(dt, &datasize);
   assert (datasize == (int)elt_size);
 #endif
   return g;
