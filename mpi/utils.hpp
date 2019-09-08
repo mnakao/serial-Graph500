@@ -155,8 +155,8 @@ struct MPI_GLOBALS {
 	int rank_z;
 	int size_y; // = comm_y.size()
 	int size_z; // = comm_z.size()
-	MPI_Comm comm_y;
-	MPI_Comm comm_z;
+  //	MPI_Comm comm_y;
+  //	MPI_Comm comm_z;
 
 	// utility method
 	bool isMaster() const { return rank == 0; }
@@ -373,11 +373,11 @@ void* page_aligned_xmalloc(const size_t size) {
 
 #if VERVOSE_MODE
 
-void xfree(void* p) {
-	x_free_check(p);
-	free(p);
-}
-#define free(p) xfree(p)
+//void xfree(void* p) {
+  //	x_free_check(p);
+//	free(p);
+//}
+//#define free(p) xfree(p)
 
 #endif // #if VERVOSE_MODE
 
@@ -1078,9 +1078,9 @@ void set_core_affinity() {
 			print_current_binding("started");
 #endif
 		}
-		if((mpi.thread_level == MPI_THREAD_SINGLE) || thread_id == 0) {
+		//		if((mpi.thread_level == MPI_THREAD_SINGLE) || thread_id == 0) {
 			omp_set_num_threads(num_bfs_threads);
-		}
+			//		}
 	}
 #if CPU_BIND_CHECK
 	else if(core_affinity_enabled) {
@@ -1494,11 +1494,11 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 	}
 #endif
 #if MPI_FUNNELED
-	int reqeust_level = MPI_THREAD_FUNNELED;
+	//	int reqeust_level = MPI_THREAD_FUNNELED;
 #else
-	int reqeust_level = MPI_THREAD_SINGLE;
+	//	int reqeust_level = MPI_THREAD_SINGLE;
 #endif
-	MPI_Init_thread(&argc, &argv, reqeust_level, &mpi.thread_level);
+	//	MPI_Init_thread(&argc, &argv, reqeust_level, &mpi.thread_level);
 	mpi.rank = 0;
 	mpi.size = 1;
 	//	MPI_Comm_rank(MPI_COMM_WORLD, &mpi.rank);
@@ -1508,21 +1508,21 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 #endif
 
 	const char* prov_str = "unknown";
-	switch(mpi.thread_level) {
-	case MPI_THREAD_SINGLE:
-		prov_str = "MPI_THREAD_SINGLE";
-		break;
-	case MPI_THREAD_FUNNELED:
-		prov_str = "MPI_THREAD_FUNNELED";
-		break;
-	case MPI_THREAD_SERIALIZED:
-		prov_str = "MPI_THREAD_SERIALIZED";
-		break;
-	case MPI_THREAD_MULTIPLE:
-		prov_str = "MPI_THREAD_MULTIPLE";
-		break;
-	}
-
+	//	switch(mpi.thread_level) {
+	//	case MPI_THREAD_SINGLE:
+	//		prov_str = "MPI_THREAD_SINGLE";
+	//		break;
+	//	case MPI_THREAD_FUNNELED:
+	//		prov_str = "MPI_THREAD_FUNNELED";
+	//		break;
+	//	case MPI_THREAD_SERIALIZED:
+	//		prov_str = "MPI_THREAD_SERIALIZED";
+	//		break;
+	//	case MPI_THREAD_MULTIPLE:
+	//		prov_str = "MPI_THREAD_MULTIPLE";
+	//		break;
+	//	}
+	
 	if(mpi.isMaster()) {
 		print_with_prefix("Graph500 Benchmark: SCALE: %d, edgefactor: %d %s", SCALE, edgefactor,
 #ifdef NDEBUG
@@ -1558,7 +1558,7 @@ void setup_globals(int argc, char** argv, int SCALE, int edgefactor)
 
 	// Initialize comm_[yz]
 	//	mpi.comm_y = mpi.comm_2dc;
-	mpi.comm_z = MPI_COMM_SELF;
+	//	mpi.comm_z = MPI_COMM_SELF;
 	mpi.size_y = mpi.size_2dr;
 	mpi.size_z = 1;
 	mpi.rank_y = mpi.rank_2dr;
@@ -1631,7 +1631,7 @@ void cleanup_globals()
 #if BACKTRACE_ON_SIGNAL
 	backtrace::thread_join();
 #endif
-	MPI_Finalize();
+	//	MPI_Finalize();
 }
 
 //-------------------------------------------------------------//
@@ -1994,9 +1994,9 @@ public:
 
 	template <typename T>
 	void free(T* buffer) {
-	  //	  printf("%p\n", buffer);
-	  //free(buffer);
-	  	  MPI_Free_mem(buffer);
+
+	  delete buffer;
+	  //	  	  MPI_Free_mem(buffer);
 	}
 
   void alltoallv(void* sendbuf, void* recvbuf, /*MPI_Datatype type, */int recvbufsize)

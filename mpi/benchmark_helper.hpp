@@ -285,10 +285,11 @@ void redistribute_edge_2d(EdgeList* edge_list, typename EdgeList::edge_type::has
 
 		if(mpi.isMaster()) print_with_prefix("Scatter edges.");
 
-		EdgeType* recv_edges = scatter.scatter(edges_to_send);
+		//		EdgeType* recv_edges = scatter.scatter(edges_to_send);
+		EdgeType recv_edges[edges_to_send/sizeof(EdgeType)];
 		const int64_t num_recv_edges = scatter.get_recv_count();
 		edge_list->write(recv_edges, num_recv_edges);
-		scatter.free(recv_edges);
+		//		scatter.free(recv_edges);
 
 		if(mpi.isMaster()) print_with_prefix("Iteration %d finished.", loop_count);
 	}

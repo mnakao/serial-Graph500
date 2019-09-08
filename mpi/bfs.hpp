@@ -516,7 +516,8 @@ public:
 		TRACER(expand_vis_bmp);
 		int bitmap_width = get_bitmap_size_local();
 		if(mpi.isYdimAvailable()) s_.sync->barrier();
-		if(mpi.rank_z == 0 && mpi.comm_y != MPI_COMM_NULL) {
+		//		if(mpi.rank_z == 0 && mpi.comm_y != MPI_COMM_NULL) {
+		if(true){
 			BitmapType* const bitmap = (BitmapType*)new_visited_;
 			BitmapType* recv_buffer = shared_visited_;
 			// TODO: asymmetric size for z. (MPI_Allgather -> MPI_Allgatherv or MpiCol::allgatherv ?)
@@ -572,7 +573,8 @@ public:
 
 	int expand_visited_list(int node_nq_size) {
 		TRACER(expand_vis_list);
-		if(mpi.rank_z == 0 && mpi.comm_y != MPI_COMM_NULL) {
+		//		if(mpi.rank_z == 0 && mpi.comm_y != MPI_COMM_NULL) {
+		if(false){
 			s_.offset[0] = MpiCol::allgatherv((TwodVertex*)visited_buffer_orig_,
 							  nq_recv_buf_, node_nq_size, /*mpi.comm_y,*/ mpi.size_y);
 			VERVOSE(g_expand_list_comm += s_.offset[0] * sizeof(TwodVertex));
