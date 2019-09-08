@@ -1201,8 +1201,8 @@ private:
 							g.reorder_map_,
 							org_local_bits_,
 							local_bits_),
-					num_recv_edges,
-					mpi.comm_2dr);
+					num_recv_edges/*,
+					mpi.comm_2dr*/);
 
 			MpiCol::gather(
 					TargetConverter(
@@ -1212,8 +1212,8 @@ private:
 							org_local_bits_,
 							local_bits_,
 							g.r_bits_ + local_bits_),
-					num_recv_edges,
-					mpi.comm_2dc);
+					num_recv_edges/*,
+					mpi.comm_2dc*/);
 
 			if(mpi.isMaster()) print_with_prefix("Add edges...");
 			addEdges(src_converted, tgt_converted, num_recv_edges, g);

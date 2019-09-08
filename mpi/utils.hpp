@@ -1640,7 +1640,7 @@ void cleanup_globals()
 namespace MpiCol {
 
 template <typename T>
-int allgatherv(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm, int comm_size) {
+int allgatherv(T* sendbuf, T* recvbuf, int sendcount, /*MPI_Comm comm, */int comm_size) {
 	TRACER(MpiCol::allgatherv);
 	int recv_off[comm_size+1], recv_cnt[comm_size];
 	//	MPI_Allgather(&sendcount, 1, MPI_INT, recv_cnt, 1, MPI_INT, comm);
@@ -1658,7 +1658,7 @@ int allgatherv(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm, int comm_si
 }
 
 template <typename T>
-void alltoall(T* sendbuf, T* recvbuf, int sendcount, MPI_Comm comm) {
+void alltoall(T* sendbuf, T* recvbuf, int sendcount/*, MPI_Comm comm*/) {
   //	MPI_Alltoall(sendbuf, sendcount, MpiTypeOf<T>::type,
   //			recvbuf, sendcount, MpiTypeOf<T>::type, comm);
   for(int i=0;i<sendcount;i++)
@@ -1698,7 +1698,7 @@ T* alltoallv(T* sendbuf, int* sendcount,
 }
 
 template <typename T>
-void my_allgatherv(T *buffer, int* count, int* offset, MPI_Comm comm, int rank, int size, int left, int right)
+void my_allgatherv(T *buffer, int* count, int* offset, /*MPI_Comm comm, */int rank, int size, int left, int right)
 {
   // This procedure may not be executed by mnakao.
   //	int l_sendidx = rank;
@@ -1744,7 +1744,7 @@ void my_allgatherv(T *sendbuf, int send_count, T *recvbuf, int* recv_count, int*
 		//MPI_Comm_rank(comm.comm, &rank);
 		int left = (rank + size - 1) % size;
 		int right = (rank + size + 1) % size;
-		my_allgatherv(recvbuf, recv_count, recv_offset, comm.comm, rank, size, left, right);
+		my_allgatherv(recvbuf, recv_count, recv_offset, /*comm.comm,*/ rank, size, left, right);
 		return ;
 	}
 	{
@@ -1753,7 +1753,7 @@ void my_allgatherv(T *sendbuf, int send_count, T *recvbuf, int* recv_count, int*
 		int base = comm.rank - rank;
 		int left = (rank + size - 1) % size + base;
 		int right = (rank + size + 1) % size + base;
-		my_allgatherv(recvbuf, &recv_count[base], &recv_offset[base], comm.comm, rank, size, left, right);
+		my_allgatherv(recvbuf, &recv_count[base], &recv_offset[base], /*comm.comm,*/ rank, size, left, right);
 	}
 	{
 		int size = comm.size_y;
@@ -1768,7 +1768,7 @@ void my_allgatherv(T *sendbuf, int send_count, T *recvbuf, int* recv_count, int*
 			offset[y] = recv_offset[start];
 			count[y] = recv_offset[last] + recv_count[last] - offset[y];
 		}
-		my_allgatherv(recvbuf, count, offset, comm.comm, rank, size, left, right);
+		my_allgatherv(recvbuf, count, offset, /*comm.comm,*/ rank, size, left, right);
 	}
 }
 
@@ -2041,7 +2041,7 @@ private:
 namespace MpiCol {
 
 template <typename Mapping>
-void scatter(const Mapping mapping, int data_count, MPI_Comm comm)
+void scatter(const Mapping mapping, int data_count/*, MPI_Comm comm*/)
 {
   ScatterContext scatter(/*comm*/0);
 	typename Mapping::send_type* restrict partitioned_data = static_cast<typename Mapping::send_type*>(
@@ -2088,7 +2088,7 @@ void scatter(const Mapping mapping, int data_count, MPI_Comm comm)
 }
 
 template <typename Mapping>
-void gather(const Mapping mapping, int data_count, MPI_Comm comm)
+void gather(const Mapping mapping, int data_count/*, MPI_Comm comm*/)
 {
   ScatterContext scatter(/*comm*/0);
 
