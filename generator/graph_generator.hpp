@@ -89,7 +89,7 @@ public:
 		if(data_in_file_ == false) {
 		}
 		else {
-			MPI_File_close(&edge_file_); edge_file_ = NULL;
+		  //			MPI_File_close(&edge_file_); edge_file_ = NULL;
 			if(read_buffer_ != NULL) { free(read_buffer_); read_buffer_ = NULL; }
 		}
 	}
@@ -136,8 +136,8 @@ public:
 				++read_block_index_; read_offset += CHUNK_SIZE;
 			}
 			else {
-				MPI_Status read_result;
-				MPI_Wait(&read_request_, &read_result);
+			  //				MPI_Status read_result;
+			  //				MPI_Wait(&read_request_, &read_result);
 				++read_block_index_; read_offset += CHUNK_SIZE;
 				EdgeType *buffer_to_read, *buffer_for_user;
 				getReadBuffer(&buffer_to_read, &buffer_for_user);
@@ -160,7 +160,7 @@ public:
 		if(edge_memory_ == NULL) {
 			if(edge_filled_size_ > read_block_index_*CHUNK_SIZE) {
 				// break reading loop
-				MPI_Wait(&read_request_, MPI_STATUS_IGNORE);
+			  //				MPI_Wait(&read_request_, MPI_STATUS_IGNORE);
 			}
 			if(read_buffer_ != NULL) { free(read_buffer_); read_buffer_ = NULL; }
 		}
@@ -239,8 +239,9 @@ public:
 			edge_filled_size_ = write_offset_;
 		}
 		int64_t written_size = write_offset_ + write_buffer_filled_size_;
-		MPI_Allreduce(&written_size, &max_edge_size_among_all_procs_,
-				1, MPI_INT64_T, MPI_MAX, MPI_COMM_WORLD);
+		max_edge_size_among_all_procs_ = written_size;
+		//		MPI_Allreduce(&written_size, &max_edge_size_among_all_procs_,
+		//				1, MPI_INT64_T, MPI_MAX, MPI_COMM_WORLD);
 	}
 
 	int64_t num_local_edges() { return num_local_edges_; }
