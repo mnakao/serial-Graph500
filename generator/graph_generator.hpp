@@ -41,7 +41,7 @@ public:
 	EdgeListStorage(int64_t nLocalEdges, const char* filepath = NULL)
 		: data_in_file_(false)
 		, edge_memory_(NULL)
-		, edge_file_(NULL)
+		  //		, edge_file_(NULL)
 		, num_local_edges_(nLocalEdges)
 		, edge_memory_size_(0)
 		, edge_filled_size_(0)
@@ -296,7 +296,7 @@ private:
 
 	bool data_in_file_;
 	EdgeType* edge_memory_;
-	MPI_File edge_file_;
+  //	MPI_File edge_file_;
 	int64_t num_local_edges_;
 	int64_t edge_memory_size_;
 	int64_t edge_filled_size_;
@@ -307,7 +307,7 @@ private:
 	// The offset from which we read next or we are reading now.
   //	MPI_Offset read_block_index_;
   long read_block_index_;
-	MPI_Request read_request_;
+  //	MPI_Request read_request_;
 	EdgeType* read_buffer_;
 
 	// write
