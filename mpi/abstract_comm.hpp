@@ -746,7 +746,7 @@ void my_allgatherv_2d(T *sendbuf, int send_count, T *recvbuf, int* recv_count, i
 		// MPI_Comm_rank(comm.comm, &rank);
 		int left = (rank + size - 1) % size;
 		int right = (rank + size + 1) % size;
-		handler.start(&req_man, recvbuf, recv_count, recv_offset, comm.comm,
+		handler.start(&req_man, recvbuf, recv_count, recv_offset, /*comm.comm,*/
 				rank, size, left, right, PRM::MY_EXPAND_TAG1);
 		req_man.run(1);
 		return ;

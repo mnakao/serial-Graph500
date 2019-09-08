@@ -116,7 +116,7 @@ void thread_join();
 #endif
 
 struct COMM_2D {
-	MPI_Comm comm;
+  //	MPI_Comm comm;
 	int rank, rank_x, rank_y;
 	int size, size_x, size_y;
 	int* rank_map; // Index: rank_x + rank_y * size_x
@@ -1420,9 +1420,9 @@ static void setup_2dcomm()
 	mpi.rank_2d = mpi.rank_2dr + mpi.rank_2dc * mpi.size_2dr;
 	mpi.size_2d = mpi.size_2dr * mpi.size_2dc;
 	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dc, mpi.rank_2dr, &mpi.comm_2dc);
-	mpi.comm_c.comm = mpi.comm_2dc;
+	//	mpi.comm_c.comm = mpi.comm_2dc;
 	MPI_Comm_split(MPI_COMM_WORLD, mpi.rank_2dr, mpi.rank_2dc, &mpi.comm_2dr);
-	mpi.comm_r.comm = mpi.comm_2dr;
+	//	mpi.comm_r.comm = mpi.comm_2dr;
 	MPI_Comm_split(MPI_COMM_WORLD, 0, mpi.rank_2d, &mpi.comm_2d);
 
 	if(mpi.isMultiDimAvailable) {
